@@ -111,16 +111,18 @@ export default function Home() {
       authState: async function() {
           onAuthStateChanged(getAuth(), (user) => {
             if (getAuth().currentUser != null) {
-                  localStorage.setItem("loggedInChatUp", true)
+                  //localStorage.setItem("loggedInChatUp", true)
                   setProfilePic(getAuth().currentUser.photoURL)
                   setUsername(getAuth().currentUser.displayName)
                   setEmail(getAuth().currentUser.email);
                   setuuid(getAuth().currentUser.uid);
-                  localStorage.setItem("profilePic", getAuth().currentUser.photoURL)
+                  //localStorage.setItem("profilePic", getAuth().currentUser.photoURL)
+                  IsSignedIn(true)
             } else {
-                localStorage.setItem("loggedInChatUp", false);
+                //localStorage.setItem("loggedInChatUp", false);
                 setProfilePic("")
                 setUsername("")
+                IsSignedIn(false)
             }
           })
       },
@@ -349,7 +351,7 @@ const LoadingIndicator = () => (
   <div>Loading...</div>
 );
 
-  if (localStorage.getItem("loggedInChatUp") == "true") {
+  if (signedIn) {
     return (
       <>
       <script src="/node_modules/material-design-lite/material.min.js" defer></script>
@@ -359,7 +361,7 @@ const LoadingIndicator = () => (
         <section id='dashboard'>
           <div className='dashboard-header-flex'>
             <div className='dashboard-header'>
-              <img title={`${username}`} className='user-profile' src={`${localStorage.getItem("profilePic") ? localStorage.getItem("profilePic") : profilePic}`}></img>
+              <img title={`${username}`} className='user-profile' src={`${profilePic}`}></img>
               <h1 className='chats-header-text'>Chats</h1>
               <div className='dashboard-header-buttons'>
                 <button onClick={() => Authentication().signOutUser()} className='icon-btn'><i className='material-icons'>logout</i></button>
