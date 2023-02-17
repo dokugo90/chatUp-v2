@@ -318,7 +318,7 @@ onSnapshot(parser, snapshot => {
         return;
       }
     })
-    window.location.reload()
+    //window.location.reload()
   }
 
   useEffect(() => {
