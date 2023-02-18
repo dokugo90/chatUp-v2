@@ -111,15 +111,21 @@ export default function Home() {
       authState: async function() {
           onAuthStateChanged(getAuth(), (user) => {
             if (getAuth().currentUser != null) {
-                  //localStorage.setItem("loggedInChatUp", true)
+              if (typeof window !== 'undefined') {
+                localStorage.setItem("loggedInChatUp", true);
+                IsSignedIn(localStorage.getItem("loggedInChatUp"))
+                localStorage.setItem("profilePic", getAuth().currentUser.photoURL);
+              }
                   setProfilePic(getAuth().currentUser.photoURL)
                   setUsername(getAuth().currentUser.displayName)
                   setEmail(getAuth().currentUser.email);
                   setuuid(getAuth().currentUser.uid);
-                  //localStorage.setItem("profilePic", getAuth().currentUser.photoURL)
                   IsSignedIn(true)
             } else {
-              //localStorage.setItem("loggedInChatUp", false);
+              if (typeof window !== "undefined") {
+                localStorage.setItem("loggedInChatUp", false);
+                IsSignedIn(localStorage.getItem("loggedInChatUp"));
+              }
                 setProfilePic("")
                 setUsername("")
                 IsSignedIn(false)
