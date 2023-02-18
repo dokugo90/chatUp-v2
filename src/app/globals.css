@@ -113,6 +113,21 @@ i {
   background-color: #555;
 }
 
+.hide-dashboard {
+  transform: translateX(-350px);
+  transition: .2s;
+  display: none;
+}
+
+.flip {
+  transform: rotate(180deg);
+}
+
+.max-width {
+ 
+  position: relative;
+  left: 0;
+}
 
 
 /*.main-content {
@@ -155,6 +170,7 @@ i {
     cursor: pointer;
   }
   #dashboard {
+    transition: .2s;
     width: var(--reponsive);
     height: 100vh;
     background-color: var(--background-color);

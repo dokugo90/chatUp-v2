@@ -74,9 +74,13 @@ const [usersList, setUsersList] = useState([]);
 const [removedUsers, setRemovedUsers] = useState([]);
 const [currentRoomId, setCurrentRoomId] = useState();
 const [theme, setTheme] = useState(false);
+const [hideDashboard, setHideDashboard] = useState("");
+const mainBody = useRef();
+const dashboard = useRef();
 const black = "black";
 const white = "white";
 const mainColor = "#242424";
+const hide_Btn = useRef();
 
 const addedRoomUsers = useRef([
 
@@ -546,6 +550,81 @@ const publicStore = getFirestore();
     }  
   }, [])
 
+  function handleHideDashboard() {
+    if (!hideDashboard) {
+      setHideDashboard(true)
+      dashboard.current.classList.add("hide-dashboard")
+     // mainBody.current.classList.add("max-width")
+      dashboard.current.setAttribute("id", "")
+      hide_Btn.current.classList.add("flip")
+      if (typeof window !== "undefined") {
+        localStorage.setItem("hidedashboard", "hidden")
+      }
+    } else {
+      setHideDashboard(false)
+      dashboard.current.setAttribute("id", "dashboard")
+      dashboard.current.classList.remove("hide-dashboard")
+      hide_Btn.current.classList.remove("flip")
+      if (typeof window !== "undefined") {
+        localStorage.setItem("hidedashboard", "shown")
+      }
+     // mainBody.current.setAttribute("id", "adad")
+    }
+  }
+
+  /*useEffect(() => {
+    if (!hideDashboard) {
+      setHideDashboard(true)
+      dashboard.current.classList.add("hide-dashboard")
+     // mainBody.current.classList.add("max-width")
+      dashboard.current.setAttribute("id", "")
+      hide_Btn.current.classList.add("flip")
+      if (typeof window !== "undefined") {
+        localStorage.setItem("hidedashboard", "hidden")
+      }
+    } else {
+      setHideDashboard(false)
+      dashboard.current.setAttribute("id", "dashboard")
+      dashboard.current.classList.remove("hide-dashboard")
+      hide_Btn.current.classList.remove("flip")
+      if (typeof window !== "undefined") {
+        localStorage.setItem("hidedashboard", "shown")
+      }
+     // mainBody.current.setAttribute("id", "adad")
+    }
+  }, [])*/
+
+  useEffect(() => {
+    if (typeof window != "undefined") {
+      if (localStorage.getItem("hidedashboard") && localStorage.getItem("hidedashboard") == "hidden") {
+        setHideDashboard(true)
+      dashboard.current.classList.add("hide-dashboard")
+     // mainBody.current.classList.add("max-width")
+      dashboard.current.setAttribute("id", "")
+      hide_Btn.current.classList.add("flip")
+      if (typeof window !== "undefined") {
+        localStorage.setItem("hidedashboard", "hidden")
+      }
+      } else if (localStorage.getItem("hidedashboard") && localStorage.getItem("hidedashboard") == "shown") {
+        setHideDashboard(false)
+        dashboard.current.setAttribute("id", "dashboard")
+        dashboard.current.classList.remove("hide-dashboard")
+        hide_Btn.current.classList.remove("flip")
+        if (typeof window !== "undefined") {
+          localStorage.setItem("hidedashboard", "shown")
+        }
+      } else {
+        setHideDashboard(false)
+      dashboard.current.classList.remove("hide-dashboard")
+     // mainBody.current.classList.add("max-width")
+      dashboard.current.setAttribute("id", "dashboard")
+      hide_Btn.current.classList.remove("flip")
+      if (typeof window !== "undefined") {
+        localStorage.setItem("hidedashboard", "shown")
+      }}
+    }  
+  }, [])
+
     if (!return404) {
       return (
         <>
@@ -553,7 +632,7 @@ const publicStore = getFirestore();
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"></link>
     <title>{chats[pathId].roomName}</title>
         <main id='chat-body'>
-          <section style={{backgroundColor: theme ? "white" : "#242424", borderRight: theme ? ".7px solid rgba(0, 0, 0, 0.1)" : ".7px solid rgba(255, 255, 255, 0.1)"}} id='dashboard'>
+          <section ref={dashboard} style={{backgroundColor: theme ? "white" : "#242424", borderRight: theme ? ".7px solid rgba(0, 0, 0, 0.1)" : ".7px solid rgba(255, 255, 255, 0.1)"}} id='dashboard'>
             <div className='dashboard-header-flex'>
               <div className='dashboard-header'>
               <img title={`${username}`} className='user-profile' src={`${profilePic}`}></img>
@@ -610,7 +689,7 @@ const publicStore = getFirestore();
           }
             </div>
           </section>
-          <section style={{backgroundColor: theme ? "white" : "#242424", borderBottom: theme ? ".7px solid rgba(0, 0, 0, 0.1)" : ".7px solid rgba(255, 255, 255, 0.1)"}} id='chat-room-info'>
+          <section ref={mainBody} style={{backgroundColor: theme ? "white" : "#242424", borderBottom: theme ? ".7px solid rgba(0, 0, 0, 0.1)" : ".7px solid rgba(255, 255, 255, 0.1)"}} id='chat-room-info'>
             <img className='room-profile-select'
             src={`https://avatars.dicebear.com/api/initials/${chats[pathId].roomName[0]}${chats[pathId].roomName.includes(' ') ? chats[pathId].roomName.split(' ')[1] : chats[pathId].roomName[1]}m.svg`}>
             </img>
@@ -648,7 +727,7 @@ const publicStore = getFirestore();
               }
             </div>
           </section>
-          <section style={{backgroundColor: theme ? "white" : "#242424"}} id='body-message' class='main-content'>
+          <section ref={mainBody} style={{backgroundColor: theme ? "white" : "#242424"}} id='body-message' class='main-content'>
           <div className='message-card-flex'>
           {
             userMessagesList.filter((sent) => sent.messageId == chats[pathId].roomId).map((item, index) => (
@@ -766,6 +845,7 @@ const publicStore = getFirestore();
           <footer style={{backgroundColor: theme ? "white" : "#242424", borderTop: theme ? ".7px solid rgba(0, 0, 0, 0.1)" : ".7px solid rgba(255, 255, 255, 0.1)"}} className='page-footer'>
               <div className='message-sender-container'>
               {/*<button onClick={() => handleEmojiPicker()} className='icon-btn'><i className='material-icons'>emoji_emotions</i></button>*/}
+              <button style={{color: theme ? "#242424" : "white"}} ref={hide_Btn} onClick={() => handleHideDashboard()} className='icon-btn'><i className='material-icons'>chevron_left</i></button>
                 <input style={{color: theme ? "black" : "white"}} maxLength="300" value={userMessage} onChange={e => setUserMessage(e.target.value)} className='message-input' type="text" placeholder='Aa'></input>
                 <button style={{color: theme ? "#242424" : "white"}} onMouseOver={() => {
                   //setCurrentPath(chats.current[0].roomId)
