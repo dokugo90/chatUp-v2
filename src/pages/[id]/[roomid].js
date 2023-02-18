@@ -496,6 +496,25 @@ const publicStore = getFirestore();
       alert("Room name must include a character, and can't be more than 20 characters");
     }
   }
+
+  function removeUser() {
+    const firestore = getFirestore();
+    const documentRef = doc(firestore, `rooms/AllRooms`);
+    const usersRoomsRef = collection(documentRef, `userRooms`);
+    const userRoomDocRef = doc(usersRoomsRef, pathRoom);
+
+    let updatedMembers = chats[pathId].members.filter((currUser) => currUser.email !== email);
+
+    updateDoc(userRoomDocRef, {
+      members: updatedMembers
+    }).then(() => {
+      handleChatOptions()
+    }).finally(() => {
+      router.push("/")
+    }).catch((err) => {
+      alert(err);
+    });
+  }
     
     if (!return404) {
       return (
@@ -573,12 +592,24 @@ const publicStore = getFirestore();
               {
                 ChatOpt ?
                 <>
-                <div className='chat-options'>
-          <button onClick={() => handleAddUsersModal()}>Add +</button>
+                {
+                  chats[pathId].admin == uuid 
+                  ?
+                  <div className='chat-options'>
+          <button onClick={() => handleAddUsersModal()}>Add</button>
           <button onClick={() => handleRenameModal()}>Rename</button>
           <button onClick={() => deleteChatRoom()}>Delete</button>
           {/*<button disabled={true}>Private</button>*/}
         </div>
+        : 
+        <>
+        <div className='chat-options-non-admin'>
+          <button onClick={() => handleAddUsersModal()}>Add</button>
+          <button onClick={() => removeUser()}>Leave</button>
+        </div>
+        </>
+                }
+                
                 </>
                 : 
                 <>
@@ -665,6 +696,7 @@ const publicStore = getFirestore();
               {
                 usersList
                 .filter((currUser) => currUser.usermail !== email)
+                .filter((currUser) => currUser.usersId !== chats[pathId].admin)
                 .filter((currUser) => !chats[pathId].members.some(member => member.email === currUser.usermail))
                 .map((item, index) => (
                   <>

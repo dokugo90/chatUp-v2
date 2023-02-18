@@ -659,6 +659,37 @@ i {
     background-color: #555;
   }
 
+  .chat-options-non-admin {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    width: 100px;
+    height: 100px;
+    background-color: #303030;
+    align-items: center;
+    justify-content: center;
+    gap: 0px;
+    border-radius: 5px;
+    z-index: 10;
+  }
+
+  .chat-options-non-admin button {
+    background-color: transparent;
+    border: none;
+    border-radius: 5px;
+    width: 100%;
+    height: 100%;
+    padding: 17px;
+    transition: .1s;
+    font-weight: bolder;
+    cursor: pointer;
+    color: white;
+  }
+  
+  .chat-options-non-admin button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
 }
 
 
@@ -1195,6 +1226,37 @@ i {
   .add-person-flex::-webkit-scrollbar-thumb:hover {
     transition: 2s;
     background-color: #555;
+  }
+
+  .chat-options-non-admin {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    width: 100px;
+    height: 100px;
+    background-color: #303030;
+    align-items: center;
+    justify-content: center;
+    gap: 0px;
+    border-radius: 5px;
+    z-index: 10;
+  }
+
+  .chat-options-non-admin button {
+    background-color: transparent;
+    border: none;
+    border-radius: 5px;
+    width: 100%;
+    height: 100%;
+    padding: 17px;
+    transition: .1s;
+    font-weight: bolder;
+    cursor: pointer;
+    color: white;
+  }
+  
+  .chat-options-non-admin button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
   }
 }
 
