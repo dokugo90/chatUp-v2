@@ -64,9 +64,11 @@ const [userMessagesList, setUserMessagesList] = useState([]);
 //const userMessagesList = useRef([])
 const unsubscribeRef = useRef();
 const add_btn = useRef();
-const timer = useRef();
-const [clean, setClean] = useState(false);
-const [shouldRun, setShouldRun] = useState(true);
+const [renameShow, setShowRename] = useState(false);
+const [overlayThree, setOverlayThree] = useState(false);
+const [overlayFour, setOverlayFour] = useState(false);
+const [newName, setNewName] = useState("");
+const [addUsersModal, showAddUsersModal] = useState(false);
 
 const [usersList, setUsersList] = useState([]);
 const [removedUsers, setRemovedUsers] = useState([]);
@@ -220,8 +222,9 @@ const publicStore = getFirestore();
       showPublicModal(false);
       showOverlay(false)
       addedRoomUsers.current = [];
-setUsersList([...usersList, ...removedUsers]);
-setRemovedUsers([]);
+      setUsersList([...usersList, ...removedUsers]);
+      setRemovedUsers([]);
+      setUserRoomName("")
     }
   }
 
@@ -252,7 +255,7 @@ setRemovedUsers([]);
     const regex = /^\s*$/;
 
 
-    if (!regex.test(userRoomName)) {
+    if (!regex.test(userRoomName) && userRoomName.length <= 20) {
       addDoc(usersRoomsRef, {
         roomName: userRoomName.trim(),
         admin: getAuth().currentUser.uid,
@@ -260,24 +263,24 @@ setRemovedUsers([]);
         lastMessage: "Chat Created",
         lastMessageTime: getTextDate(),
         createdRoom: serverTimestamp()
-      })
-      .then(docRef => {
-        const userroomId = docRef.id;
-        const userRoomDocRef = doc(usersRoomsRef, userroomId);
-        const userRoomSubcollection = collection(userRoomDocRef, userRoomName);
-        return addDoc(userRoomSubcollection, {});
+      }).then(() => {
+        addedRoomUsers.current.splice(0, addedRoomUsers.current.length)
+        handlePublicModal();
+      }).finally(() => {
+        setUserRoomName("");
+        setUsersList([...usersList, ...removedUsers]);
+        setRemovedUsers([]);
       })
       .catch(error => {
         alert("Try Again");
       });
-      handlePublicModal();
-      setTimeout(() => {
+      /*setTimeout(() => {
         addedRoomUsers.current.splice(0, addedRoomUsers.current.length)
       }, 2000)
       setUsersList([...usersList, ...removedUsers]);
-      setRemovedUsers([]);
+      setRemovedUsers([]);*/
       } else {
-        alert("Room name must include a character.")
+        alert("Room name must include a character, and can't be more than 20 characters")
       }
   }
 
@@ -287,12 +290,11 @@ setRemovedUsers([]);
     const usersRoomsRef = collection(documentRef, `userRooms`);
     const userRoomDocRef = doc(usersRoomsRef, pathRoom);
 
+   await deleteDoc(userRoomDocRef).then(() => {
     router.push("/")
-
-   await deleteDoc(userRoomDocRef)
-   /* .then(()=> {
-    router.push("/")
-   }) */
+   }).catch((err) => {
+    alert("Please try again")
+   }) 
 
   }
 
@@ -301,7 +303,7 @@ setRemovedUsers([]);
     const documentRef = doc(firestore, `rooms/AllRooms`);
     const usersRoomsRef = collection(documentRef, `userRooms`);
     const userRoomDocRef = doc(usersRoomsRef, pathRoom);
-    const userRoomSubcollection = query(collection(userRoomDocRef, `${chats[pathId].roomName}`), orderBy("sentMessage"));
+    const userRoomSubcollection = query(collection(userRoomDocRef, `${chats[pathId].roomId}`), orderBy("sentMessage"));
   
     setUserMessagesList([]);
   
@@ -346,7 +348,7 @@ setRemovedUsers([]);
     const documentRef = doc(firestore, `rooms/AllRooms`);
     const usersRoomsRef = collection(documentRef, `userRooms`);
     const userRoomDocRef = doc(usersRoomsRef, pathRoom);
-    const userRoomSubcollection = collection(userRoomDocRef, `${chats[pathId].roomName}`);
+    const userRoomSubcollection = collection(userRoomDocRef, `${chats[pathId].roomId}`);
 
     const regex = /^\s*$/;
 
@@ -358,6 +360,8 @@ setRemovedUsers([]);
         sentBy: getAuth().currentUser.displayName,
         time: getTextDate(),
         roomId: chats[pathId].roomId,
+      }).then(() => {
+        setUserMessage("")
       }).catch((err) => {
         alert(err);
       })
@@ -411,6 +415,87 @@ setRemovedUsers([]);
   function findCurrentIndex(e) {
       return chats.findIndex(item => item.roomId == currentPath)
   } 
+
+  function handleNewAddedUsers() {
+    let roomUsers = chats[pathId].members;
+    for (let i = 0; i < addedRoomUsers.current.length; i++) {
+
+      roomUsers.push({name: `${addedRoomUsers.current[i].usersName}`, email: `${addedRoomUsers.current[i].usersEmail}`, usersId: `${addedRoomUsers.current[i].usersUid}`})
+
+    }
+    return roomUsers;
+  }
+
+  function UpdateRoomUsers() {
+    const firestore = getFirestore();
+    const documentRef = doc(firestore, `rooms/AllRooms`);
+    const usersRoomsRef = collection(documentRef, `userRooms`);
+    const userRoomDocRef = doc(usersRoomsRef, pathRoom);
+
+    if (removedUsers.length !== 0) {
+    updateDoc(userRoomDocRef, {
+      members: handleNewAddedUsers()
+    }).then(() => {
+      handleAddUsersModal()
+    }).catch((err) => {
+      alert(err);
+    });
+  } else {
+    alert("Select a user to add");
+  }
+  }
+
+  function handleAddUsersModal() {
+    if (!addUsersModal) {
+      showAddUsersModal(true)
+      handleChatOptions()
+      setOverlayFour(true)
+    } else {
+      showAddUsersModal(false);
+      setOverlayFour(false)
+      addedRoomUsers.current = [];
+      setUsersList([...usersList, ...removedUsers]);
+      setRemovedUsers([]);
+    }
+  }
+
+  function handleRenameModal() {
+    if (!renameShow) {
+      setShowRename(true)
+      setOverlayThree(true)
+      handleChatOptions()
+    } else {
+      setShowRename(false)
+      setOverlayThree(false);
+      setNewName("")
+    }
+  }
+
+  function renameRoom() {
+    const firestore = getFirestore();
+    const documentRef = doc(firestore, `rooms/AllRooms`);
+    const usersRoomsRef = collection(documentRef, `userRooms`);
+    const userRoomDocRef = doc(usersRoomsRef, pathRoom);
+
+    const regex = /^\s*$/;
+
+    if (!regex.test(newName) && newName.length <= 20) {
+      updateDoc(userRoomDocRef, {
+        roomName: newName.trim(),
+      }).then(() => {
+        handleRenameModal()
+      }).finally(() => {
+        setNewName("")
+      })
+    .catch((err) => {
+      alert("Try again");
+    }).finally(() => {
+      setNewName("")
+    });
+    } else {
+      alert("Room name must include a character, and can't be more than 20 characters");
+    }
+  }
     
     if (!return404) {
       return (
@@ -489,7 +574,8 @@ setRemovedUsers([]);
                 ChatOpt ?
                 <>
                 <div className='chat-options'>
-          <button onClick={() => handlePublicModal()}>Add +</button>
+          <button onClick={() => handleAddUsersModal()}>Add +</button>
+          <button onClick={() => handleRenameModal()}>Rename</button>
           <button onClick={() => deleteChatRoom()}>Delete</button>
           {/*<button disabled={true}>Private</button>*/}
         </div>
@@ -542,8 +628,8 @@ setRemovedUsers([]);
               }
               </div>
               <div className='public-btns-flex'>
-                <button onClick={() => handlePublicModal()} className='cancel-public-btn'>Cancel</button>
-                <button onClick={() => createNewRoom()} className='create-public-btn'>Create</button>
+                <button onClick={() => handlePublicModal()} className='cancel-public-btn'>CANCEL</button>
+                <button onClick={() => createNewRoom()} className='create-public-btn'>CREATE</button>
               </div>
             </div>
           </div>
@@ -552,11 +638,72 @@ setRemovedUsers([]);
 
         </>
       }
+      {
+        renameShow ?
+        <>
+          <div className='rename-modal-flex'>
+            <div className='rename-modal'>
+          <input onChange={e => setNewName(e.target.value)} className='chat-name-input' type="text" placeholder='New Chat Name'></input>
+          <div className='public-btns-flex'>
+                <button onClick={() => handleRenameModal()} className='cancel-public-btn'>CANCEL</button>
+                <button onClick={() => renameRoom()} className='create-public-btn'>RENAME</button>
+              </div>
+              </div>
+          </div>
+        </>
+        : 
+        <>
+
+        </>
+      }
+      {
+        addUsersModal ?
+        <>
+         <div className='add-person-modal-flex'>
+            <div className='add-person-modal'>
+              <div className='add-person-flex'>
+              {
+                usersList
+                .filter((currUser) => currUser.usermail !== email)
+                .filter((currUser) => !chats[pathId].members.some(member => member.email === currUser.usermail))
+                .map((item, index) => (
+                  <>
+                  <div onClick={() => {
+                    addedRoomUsers.current.push({
+                      usersName: item.usersName,
+                      usersUid: item.usersId,
+                      usersEmail: item.usermail,
+                    })
+                    setRemovedUsers([...removedUsers, item]);
+                    setUsersList(usersList.filter((currentItem) => currentItem.usermail !== item.usermail))
+                  }} className='users-list'>
+                    <img src={item.pfp} className='users-photo' />
+                    <div>
+                      <p className='users-list-name'>{item.usersName}</p>
+                      <p className='users-list-email'>{item.usermail}</p>
+                    </div>
+                  </div>
+                  </>
+                ))
+              }
+              </div>
+              <div className='public-btns-flex'>
+                <button onClick={() => handleAddUsersModal()} className='cancel-public-btn'>CANCEL</button>
+                <button onClick={() => UpdateRoomUsers()} className='create-public-btn'>ADD</button>
+              </div>
+            </div>
+          </div>
+        </>
+        : 
+        <>
+
+        </>
+      }
       </section>
           <footer className='page-footer'>
               <div className='message-sender-container'>
               <button className='icon-btn'><i className='material-icons'>emoji_emotions</i></button>
-                <input onChange={e => setUserMessage(e.target.value)} className='message-input' type="text" placeholder='Aa'></input>
+                <input value={userMessage} onChange={e => setUserMessage(e.target.value)} className='message-input' type="text" placeholder='Aa'></input>
                 <button onMouseOver={() => {
                   //setCurrentPath(chats.current[0].roomId)
                 }} onClick={() => handleSendRoomMessages()} className='icon-btn'><i className='material-icons'>send</i></button>
@@ -570,6 +717,16 @@ setRemovedUsers([]);
           {
             overlayTwo ?
             <div onClick={() => handleChatOptions()} className='overlay'></div>
+            : <></>
+          }
+          {
+            overlayThree ?
+            <div onClick={() => handleRenameModal()} className='overlay'></div>
+            : <></>
+          }
+          {
+            overlayFour ?
+            <div onClick={() => handleAddUsersModal()} className='overlay'></div>
             : <></>
           }
         </main>
@@ -785,3 +942,10 @@ const parser = query(usersRoomsRef, orderBy("createdRoom"))
   
     
   }, [pathId]);*/
+
+  /*.then(docRef => {
+        const userroomId = docRef.id;
+        const userRoomDocRef = doc(usersRoomsRef, userroomId);
+        const userRoomSubcollection = collection(userRoomDocRef, userRoomName);
+        return addDoc(userRoomSubcollection, {});
+      })*/

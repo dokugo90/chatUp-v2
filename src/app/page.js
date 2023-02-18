@@ -184,8 +184,10 @@ export default function Home() {
     } else {
       showPublicModal(false);
       showOverlay(false)
+      addedRoomUsers.current = [];
 setUsersList([...usersList, ...removedUsers]);
 setRemovedUsers([]);
+setUserRoomName("")
     }
   }
 
@@ -221,7 +223,7 @@ const usersRoomsRef = collection(documentRef, `userRooms`);
 //const individualRefs = collection(usersRoomsRef, `${userRoomName}`)
 const regex = /^\s*$/;
 
-if (!regex.test(userRoomName)) {
+if (!regex.test(userRoomName) && userRoomName.length <= 20) {
 addDoc(usersRoomsRef, {
   roomName: userRoomName.trim(),
   admin: getAuth().currentUser.uid,
@@ -230,13 +232,24 @@ addDoc(usersRoomsRef, {
   lastMessageTime: getTextDate(),
   createdRoom: serverTimestamp()
 })
-.then(docRef => {
+.then(() => {
+  addedRoomUsers.current.splice(0, addedRoomUsers.current.length)
+  handlePublicModal();
+}).finally(() => {
+  setUserRoomName("");
+  setUsersList([...usersList, ...removedUsers]);
+  setRemovedUsers([]);
+})
+.catch(error => {
+  alert("Try Again");
+});
+/*.then(docRef => {
   const userroomId = docRef.id;
   const userRoomDocRef = doc(usersRoomsRef, userroomId);
   const userRoomSubcollection = collection(userRoomDocRef, userRoomName);
   return addDoc(userRoomSubcollection, {});
-})
-.catch(error => {
+})*/
+/*.catch(error => {
   alert("Try Again");
 });
 handlePublicModal();
@@ -244,9 +257,9 @@ setTimeout(() => {
   addedRoomUsers.current.splice(0, addedRoomUsers.current.length)
 }, 2000)
 setUsersList([...usersList, ...removedUsers]);
-setRemovedUsers([]);
+setRemovedUsers([]);*/
 } else {
-  alert("Room name must include a character.")
+  alert("Room name must include a character, and can't be more than 20 characters")
 }
 
 /*addDoc(individualRefs, {})
@@ -276,25 +289,25 @@ setDoc(doccu, {
 })*/
   }
 
-  function handleAllUserChats() {
+ /* function handleAllUserChats() {
     const firestore = getFirestore();
 const documentRef = doc(firestore, `rooms/AllRooms`);
 const usersRoomsRef = collection(documentRef, `userRooms`);
 const parser = query(usersRoomsRef, orderBy("createdRoom"))
 onSnapshot(parser, snapshot => {
-  snapshot.docChanges().forEach((change) => {
-    if (change.type == "added") {
+  snapshot.forEach((change) => {
+   
       chats.push({
-        roomName: change.doc.data().roomName,
-        lastMessage: change.doc.data().lastMessage,
-        lastMessageTime: change.doc.data().lastMessageTime,
-        roomId: change.doc.id,
-        members: change.doc.data().members,
-        admin: change.doc.data().admin,
+        roomName: change.data().roomName,
+        lastMessage: change.data().lastMessage,
+        lastMessageTime: change.data().lastMessageTime,
+        roomId: change.id,
+        members: change.data().members,
+        admin: change.data().admin,
       })
       setChats([...chats])
       setFilteredChats([...chats])
-    }
+    
   })
 })
   }
@@ -308,7 +321,33 @@ onSnapshot(parser, snapshot => {
     return () => {
       ignore = true
     }
-  }, [email])
+  }, [email])*/
+
+  useEffect(() => {
+    const firestore = getFirestore();
+    const documentRef = doc(firestore, `rooms/AllRooms`);
+    const usersRoomsRef = collection(documentRef, `userRooms`);
+    const parser = query(usersRoomsRef, orderBy("createdRoom"));
+    const unsubscribe = onSnapshot(parser, snapshot => {
+      const newChats = [];
+      snapshot.forEach(doc => {
+        newChats.push({
+          roomName: doc.data().roomName,
+          lastMessage: doc.data().lastMessage,
+          lastMessageTime: doc.data().lastMessageTime,
+          roomId: doc.id,
+          members: doc.data().members,
+          admin: doc.data().admin
+        });
+      });
+      setChats([...newChats]);
+      setFilteredChats([...newChats])
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   function addUserToDatabase() {
     onSnapshot(query(collection(getFirestore(), 'users'), where("uniqueId", "==", getAuth().currentUser.uid)), snapshot => {

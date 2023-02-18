@@ -566,7 +566,7 @@ i {
     display: flex;
     flex-direction: column;
     width: 100px;
-    height: 100px;
+    height: 150px;
     background-color: #303030;
     align-items: center;
     justify-content: center;
@@ -590,6 +590,73 @@ i {
   
   .chat-options button:hover {
     background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .rename-modal-flex {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .rename-modal {
+    width: clamp(150px, 20%, 200px);
+    height: 100px;
+    background-color: #555;
+    margin-top: 100px;
+    position: absolute;
+    top: calc(50% - 30%);
+    left: calc(50% - 10%);
+    transform: translateY(-50%, -50%);
+    padding: 10px;
+    border-radius: 5px;
+    z-index: 10;
+  }
+
+  .add-person-modal-flex {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .add-person-modal {
+    width: clamp(150px, 20%, 200px);
+    height: 190px;
+    background-color: #555;
+    margin-top: 100px;
+    position: absolute;
+    top: calc(50% - 30%);
+    left: calc(50% - 10%);
+    transform: translateY(-50%, -50%);
+    padding: 10px;
+    border-radius: 5px;
+    z-index: 10;
+  }
+
+  .add-person-flex {
+    margin-top: 0px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    height: 130px;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .add-person-flex::-webkit-scrollbar {
+    width: 0.7em;
+    transition: 2s;
+    background-color: transparent;
+  }
+   
+  .add-person-flex::-webkit-scrollbar-thumb {
+    transition: 2s;
+    border-radius: 25px;
+    background-color: rgba(0, 0, 0, 0.2);
+  }
+   
+  .add-person-flex::-webkit-scrollbar-thumb:hover {
+    transition: 2s;
+    background-color: #555;
   }
 
 }
@@ -1037,7 +1104,7 @@ i {
     display: flex;
     flex-direction: column;
     width: 100px;
-    height: 100px;
+    height: 150px;
     background-color: #303030;
     align-items: center;
     justify-content: center;
@@ -1061,6 +1128,73 @@ i {
   
   .chat-options button:hover {
     background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .rename-modal-flex {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .rename-modal {
+    width: clamp(150px, 20%, 200px);
+    height: 100px;
+    background-color: #555;
+    margin-top: 100px;
+    position: absolute;
+    top: calc(50% - 30%);
+    left: calc(50% - 10%);
+    transform: translateY(-50%, -50%);
+    padding: 10px;
+    border-radius: 5px;
+    z-index: 10;
+  }
+
+  .add-person-modal-flex {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .add-person-modal {
+    width: clamp(150px, 20%, 200px);
+    height: 190px;
+    background-color: #555;
+    margin-top: 100px;
+    position: absolute;
+    top: calc(50% - 30%);
+    left: calc(50% - 10%);
+    transform: translateY(-50%, -50%);
+    padding: 10px;
+    border-radius: 5px;
+    z-index: 10;
+  }
+
+  .add-person-flex {
+    margin-top: 0px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    height: 130px;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .add-person-flex::-webkit-scrollbar {
+    width: 0.7em;
+    transition: 2s;
+    background-color: transparent;
+  }
+   
+  .add-person-flex::-webkit-scrollbar-thumb {
+    transition: 2s;
+    border-radius: 25px;
+    background-color: rgba(0, 0, 0, 0.2);
+  }
+   
+  .add-person-flex::-webkit-scrollbar-thumb:hover {
+    transition: 2s;
+    background-color: #555;
   }
 }
 
