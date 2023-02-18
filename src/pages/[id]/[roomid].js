@@ -287,9 +287,12 @@ setRemovedUsers([]);
     const usersRoomsRef = collection(documentRef, `userRooms`);
     const userRoomDocRef = doc(usersRoomsRef, pathRoom);
 
-   await deleteDoc(userRoomDocRef).then(()=> {
     router.push("/")
-   })
+
+   await deleteDoc(userRoomDocRef)
+   /* .then(()=> {
+    router.push("/")
+   }) */
 
   }
 
