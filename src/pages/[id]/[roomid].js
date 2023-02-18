@@ -247,9 +247,7 @@ setRemovedUsers([]);
   function createNewRoom() {
     const firestore = getFirestore();
     const documentRef = doc(firestore, `rooms/AllRooms`);
-    //const createdRoomsCollection = collection(documentRef, `${userRoomName}`)
     const usersRoomsRef = collection(documentRef, `userRooms`);
-    //const individualRefs = collection(usersRoomsRef, `${userRoomName}`)
     const regex = /^\s*$/;
 
 
@@ -288,64 +286,44 @@ setRemovedUsers([]);
     const usersRoomsRef = collection(documentRef, `userRooms`);
     const userRoomDocRef = doc(usersRoomsRef, pathRoom);
     const userRoomSubcollection = query(collection(userRoomDocRef, `${chats[pathId].roomName}`), orderBy("sentMessage"));
-
+  
     setUserMessagesList([]);
-
-  onSnapshot(userRoomSubcollection, snapshot => {
+  
+    const unsubscribe = onSnapshot(userRoomSubcollection, snapshot => {
       snapshot.docChanges().forEach((change) => {
         if (change.doc.data().roomId == pathRoom) {
-        if (change.type == "added") {
-              setUserMessagesList((prevState) => [
-                ...prevState,
-                {
-                  sender: change.doc.data().sentBy,
-                  textMessage: change.doc.data().message,
-                  messageImage: change.doc.data().userImage,
-                  sentTime: change.doc.data().time,
-                  messageId: change.doc.data().roomId,
-                }
-              ]);
-             //setShouldRun(false);
-            /*userMessagesList.current.push({
-              sender: change.doc.data().sentBy,
+          if (change.type == "added") {
+            setUserMessagesList(prevState => [
+              ...prevState,
+              {
+                sender: change.doc.data().sentBy,
                 textMessage: change.doc.data().message,
                 messageImage: change.doc.data().userImage,
                 sentTime: change.doc.data().time,
-            })*/
-            //setUserMessagesList([...userMessagesList])
+                messageId: change.doc.data().roomId,
+              },
+            ]);
+          }
         }
-      }
-      })
-    })
-
+      });
+    });
+  
+    return unsubscribe;
   }
-
+  
   useEffect(() => {
-    let ignore = false;
-
-    if (!ignore) {
-      handleShowRoomMessages(pathId)
+    let unsubscribe;
+  
+    if (pathRoom) {
+      unsubscribe = handleShowRoomMessages(pathId);
     }
+  
     return () => {
-      ignore = true;
-    }
-  }, [pathRoom])
-
- /* useEffect(() => {
-    if (shouldRun) {
-      setShouldRun(false)
-    } else {
-      setShouldRun(true)
-    }
-  }, [shouldRun]) */
-
-  /*useEffect(() => {
-    
-  
-   handleShowRoomMessages(pathId);
-  
-    
-  }, [pathId]);*/
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
+  }, [pathRoom]);
 
   function handleSendRoomMessages() {
     const firestore = getFirestore();
@@ -388,85 +366,6 @@ setRemovedUsers([]);
     //alert(currentRoomId)
   }, [pathId])
 
-  let myRef;
-
-  /*function handleAllUserChats() {
-    
-    const firestore = getFirestore();
-const documentRef = doc(firestore, `rooms/AllRooms`);
-const usersRoomsRef = collection(documentRef, `userRooms`);
-const parser = query(usersRoomsRef, orderBy("createdRoom"))
- myRef = onSnapshot(parser, snapshot => {
-  snapshot.docChanges().forEach((change) => {
-    if (change.type == "added") {
-      chats.push({
-        roomName: change.doc.data().roomName,
-        lastMessage: change.doc.data().lastMessage,
-        lastMessageTime: change.doc.data().lastMessageTime,
-        roomId: change.doc.id,
-        members: change.doc.data().members,
-        admin: change.doc.data().admin,
-      })
-      setChats([...chats])
-      setFilteredChats([...chats])
-    } if (change.type == "modified") {
-      //chats.current[pathId].lastMessage = change.doc.data().lastMessage
-      //chats.current[pathId].lastMessageTime = change.doc.data().lastMessageTime;
-      //setFilteredChats([...chats.current])
-      
-    }
-  })
-})
-
-timer.current = setTimeout(() => {
-  cleanChatsArray()
-}, 3000)
-
-  }
-
-  useEffect(() => {
-    let ignore = false;
-
-    if (!ignore && email != "") {
-      handleAllUserChats();
-      }
-      return () => {
-        ignore = true;
-      }
-  }, [])*/
-
-  /*function handleAllUserChats() {
-    const firestore = getFirestore();
-    const documentRef = doc(firestore, `rooms/AllRooms`);
-    const usersRoomsRef = collection(documentRef, `userRooms`);
-    const parser = query(usersRoomsRef, orderBy("createdRoom"));
-  
-    useEffect(() => {
-      const unsubscribe = onSnapshot(parser, snapshot => {
-        const newChats = [];
-        snapshot.forEach(doc => {
-          newChats.push({
-            roomName: doc.data().roomName,
-            lastMessage: doc.data().lastMessage,
-            lastMessageTime: doc.data().lastMessageTime,
-            roomId: doc.id,
-            members: doc.data().members,
-            admin: doc.data().admin
-          });
-        });
-        setChats([...newChats]);
-        setFilteredChats([...newChats])
-        alert("Got Data Rwq")
-      });
-  
-      return () => {
-        unsubscribe();
-      };
-    }, [parser]);
-  
-    return chats;
-  }*/
-
   useEffect(() => {
     const firestore = getFirestore();
     const documentRef = doc(firestore, `rooms/AllRooms`);
@@ -493,77 +392,9 @@ timer.current = setTimeout(() => {
     };
   }, []);
 
-  /*useEffect(() => {
-    handleAllUserChats()
-  }, [])*/
-
-
-  /*useEffect(() => {
-    const firestore = getFirestore();
-const documentRef = doc(firestore, `rooms/AllRooms`);
-const usersRoomsRef = collection(documentRef, `userRooms`);
-const parser = query(usersRoomsRef, orderBy("createdRoom"))
- const unsubscribe = onSnapshot(parser, snapshot => {
-  snapshot.docChanges().forEach((change) => {
-    if (change.type == "added") {
-      chats.current.push({
-        roomName: change.doc.data().roomName,
-        lastMessage: change.doc.data().lastMessage,
-        lastMessageTime: change.doc.data().lastMessageTime,
-        roomId: change.doc.id,
-        members: change.doc.data().members,
-        admin: change.doc.data().admin,
-      })
-      //setChats([...chats])
-      
-      setFilteredChats([...chats.current])
-      for (let i = 0; i < chats.current.length; i++) {
-        if (chats.current[i].admin == `${uuid}` || chats.current[i].members.some((user) => user.email === email)) {
-          chats.current.pop();
-          //setChats([...chats])
-         // setFilteredChats([...chats.current])
-        }
-      }
-    } if (change.type == "modified") {
-      //chats.current[pathId].lastMessage = change.doc.data().lastMessage
-      //chats.current[pathId].lastMessageTime = change.doc.data().lastMessageTime;
-      //setFilteredChats([...chats.current])
-      
-    }
-  })
-})
-
-    return () => {
-      unsubscribe()
-    }
-  }, [])*/
-
-  function handlelocalstorage() {
-    
-    if (typeof window !== 'undefined') {
-      const image = localStorage.getItem("profilePic")
-      return image;
-    } else {
-      return profilePic;
-    }
-  }
-
   function findCurrentIndex(e) {
       return chats.findIndex(item => item.roomId == currentPath)
   } 
-
-  function cleanChatsArray() {
-    for (let i = 0; i < chats.length; i++) {
-        if (chats[i].admin == `${uuid}` || chats[i].members.some((user) => user.email === email)) {
-          chats.pop();
-          //setChats([...chats])
-         // chats.current = chats.current;
-          setFilteredChats([...chats])
-        } else {
-          return;
-        }
-    }
-}
     
     if (!return404) {
       return (
@@ -600,31 +431,12 @@ const parser = query(usersRoomsRef, orderBy("createdRoom"))
               <input onChange={e => setFilterText(e.target.value)} className='filter-input' type="text" placeholder='Search chats'></input>
             </div>
             <div className='chats-container'>
-              {/*item.members.some((user) => user.email === email) || item.admin == uuid ? (
-                <>
-                <Link scroll={false} href="/[id]/[roomid]" as={`/${findCurrentIndex()}/${item.roomId}`}>
-                  <div onMouseOver={() => setCurrentPath(item.roomId)}>
-                    <Dashboard
-                      key={index}
-                      roomId={""}
-                      currentRoom={"homepage"}
-                      roomName={item.roomName}
-                      lastMessage={item.lastMessage}
-                      lastMessageTime={item.lastMessageTime}
-                      roomImage={`https://avatars.dicebear.com/api/initials/${item.roomName[0]}${item.roomName.includes(' ') ? item.roomName.split(' ')[1] : item.roomName[1]}m.svg`}
-                    />
-                  </div>
-                </Link>
-                </>
-              ) : (
-                <></>
-              )*/}
           {
             filteredChats.map((item, index) => (
               item.members.some((user) => user.email === email) || item.admin == uuid ? (
                 <>
                 
-                  <div /*onClick={() => handleShowRoomMessages()}*/ title={item.roomName} onMouseOver={() => setCurrentPath(item.roomId)}>
+                  <div title={item.roomName} onMouseOver={() => setCurrentPath(item.roomId)}>
                     <Dashboard
                       key={index}
                       roomId={item.roomId}
@@ -763,3 +575,194 @@ export async function getServerSideProps({ params }) {
 }
 
 const app = initializeApp(firebaseConfig);
+
+//setShouldRun(false);
+            /*userMessagesList.current.push({
+              sender: change.doc.data().sentBy,
+                textMessage: change.doc.data().message,
+                messageImage: change.doc.data().userImage,
+                sentTime: change.doc.data().time,
+            })*/
+            //setUserMessagesList([...userMessagesList])
+
+
+  /*function handleAllUserChats() {
+    
+    const firestore = getFirestore();
+const documentRef = doc(firestore, `rooms/AllRooms`);
+const usersRoomsRef = collection(documentRef, `userRooms`);
+const parser = query(usersRoomsRef, orderBy("createdRoom"))
+ myRef = onSnapshot(parser, snapshot => {
+  snapshot.docChanges().forEach((change) => {
+    if (change.type == "added") {
+      chats.push({
+        roomName: change.doc.data().roomName,
+        lastMessage: change.doc.data().lastMessage,
+        lastMessageTime: change.doc.data().lastMessageTime,
+        roomId: change.doc.id,
+        members: change.doc.data().members,
+        admin: change.doc.data().admin,
+      })
+      setChats([...chats])
+      setFilteredChats([...chats])
+    } if (change.type == "modified") {
+      //chats.current[pathId].lastMessage = change.doc.data().lastMessage
+      //chats.current[pathId].lastMessageTime = change.doc.data().lastMessageTime;
+      //setFilteredChats([...chats.current])
+      
+    }
+  })
+})
+
+timer.current = setTimeout(() => {
+  cleanChatsArray()
+}, 3000)
+
+  }
+
+  useEffect(() => {
+    let ignore = false;
+
+    if (!ignore && email != "") {
+      handleAllUserChats();
+      }
+      return () => {
+        ignore = true;
+      }
+  }, [])*/
+
+  /*function handleAllUserChats() {
+    const firestore = getFirestore();
+    const documentRef = doc(firestore, `rooms/AllRooms`);
+    const usersRoomsRef = collection(documentRef, `userRooms`);
+    const parser = query(usersRoomsRef, orderBy("createdRoom"));
+  
+    useEffect(() => {
+      const unsubscribe = onSnapshot(parser, snapshot => {
+        const newChats = [];
+        snapshot.forEach(doc => {
+          newChats.push({
+            roomName: doc.data().roomName,
+            lastMessage: doc.data().lastMessage,
+            lastMessageTime: doc.data().lastMessageTime,
+            roomId: doc.id,
+            members: doc.data().members,
+            admin: doc.data().admin
+          });
+        });
+        setChats([...newChats]);
+        setFilteredChats([...newChats])
+        alert("Got Data Rwq")
+      });
+  
+      return () => {
+        unsubscribe();
+      };
+    }, [parser]);
+  
+    return chats;
+  }*/
+
+  /*item.members.some((user) => user.email === email) || item.admin == uuid ? (
+                <>
+                <Link scroll={false} href="/[id]/[roomid]" as={`/${findCurrentIndex()}/${item.roomId}`}>
+                  <div onMouseOver={() => setCurrentPath(item.roomId)}>
+                    <Dashboard
+                      key={index}
+                      roomId={""}
+                      currentRoom={"homepage"}
+                      roomName={item.roomName}
+                      lastMessage={item.lastMessage}
+                      lastMessageTime={item.lastMessageTime}
+                      roomImage={`https://avatars.dicebear.com/api/initials/${item.roomName[0]}${item.roomName.includes(' ') ? item.roomName.split(' ')[1] : item.roomName[1]}m.svg`}
+                    />
+                  </div>
+                </Link>
+                </>
+              ) : (
+                <></>
+              )*/
+
+              /*function cleanChatsArray() {
+    for (let i = 0; i < chats.length; i++) {
+        if (chats[i].admin == `${uuid}` || chats[i].members.some((user) => user.email === email)) {
+          chats.pop();
+          //setChats([...chats])
+         // chats.current = chats.current;
+          setFilteredChats([...chats])
+        } else {
+          return;
+        }
+    }
+}*/
+
+  /*useEffect(() => {
+    handleAllUserChats()
+  }, [])*/
+
+
+  /*useEffect(() => {
+    const firestore = getFirestore();
+const documentRef = doc(firestore, `rooms/AllRooms`);
+const usersRoomsRef = collection(documentRef, `userRooms`);
+const parser = query(usersRoomsRef, orderBy("createdRoom"))
+ const unsubscribe = onSnapshot(parser, snapshot => {
+  snapshot.docChanges().forEach((change) => {
+    if (change.type == "added") {
+      chats.current.push({
+        roomName: change.doc.data().roomName,
+        lastMessage: change.doc.data().lastMessage,
+        lastMessageTime: change.doc.data().lastMessageTime,
+        roomId: change.doc.id,
+        members: change.doc.data().members,
+        admin: change.doc.data().admin,
+      })
+      //setChats([...chats])
+      
+      setFilteredChats([...chats.current])
+      for (let i = 0; i < chats.current.length; i++) {
+        if (chats.current[i].admin == `${uuid}` || chats.current[i].members.some((user) => user.email === email)) {
+          chats.current.pop();
+          //setChats([...chats])
+         // setFilteredChats([...chats.current])
+        }
+      }
+    } if (change.type == "modified") {
+      //chats.current[pathId].lastMessage = change.doc.data().lastMessage
+      //chats.current[pathId].lastMessageTime = change.doc.data().lastMessageTime;
+      //setFilteredChats([...chats.current])
+      
+    }
+  })
+})
+
+    return () => {
+      unsubscribe()
+    }
+  }, [])*/
+
+  /*function handlelocalstorage() {
+    
+    if (typeof window !== 'undefined') {
+      const image = localStorage.getItem("profilePic")
+      return image;
+    } else {
+      return profilePic;
+    }
+  }*/
+
+  /* useEffect(() => {
+    if (shouldRun) {
+      setShouldRun(false)
+    } else {
+      setShouldRun(true)
+    }
+  }, [shouldRun]) */
+
+  /*useEffect(() => {
+    
+  
+   handleShowRoomMessages(pathId);
+  
+    
+  }, [pathId]);*/
