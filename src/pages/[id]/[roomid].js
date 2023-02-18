@@ -307,7 +307,7 @@ const publicStore = getFirestore();
     const documentRef = doc(firestore, `rooms/AllRooms`);
     const usersRoomsRef = collection(documentRef, `userRooms`);
     const userRoomDocRef = doc(usersRoomsRef, pathRoom);
-    const userRoomSubcollection = query(collection(userRoomDocRef, `${chats[pathId].roomId}`), orderBy("sentMessage"));
+    const userRoomSubcollection = query(collection(userRoomDocRef, `${chats[pathId].roomId}`), orderBy("sentMessage"), limit(100));
   
     setUserMessagesList([]);
   
