@@ -219,6 +219,7 @@ const publicStore = getFirestore();
     } else {
       showPublicModal(false);
       showOverlay(false)
+      addedRoomUsers.current = [];
 setUsersList([...usersList, ...removedUsers]);
 setRemovedUsers([]);
     }
@@ -235,7 +236,7 @@ setRemovedUsers([]);
   }
 
   function handleAddedUsers() {
-    let roomUsers= [];
+    let roomUsers = [];
     for (let i = 0; i < addedRoomUsers.current.length; i++) {
 
       roomUsers.push({name: `${addedRoomUsers.current[i].usersName}`, email: `${addedRoomUsers.current[i].usersEmail}`, usersId: `${addedRoomUsers.current[i].usersUid}`})
@@ -278,6 +279,18 @@ setRemovedUsers([]);
       } else {
         alert("Room name must include a character.")
       }
+  }
+
+  async function deleteChatRoom() {
+    const firestore = getFirestore();
+    const documentRef = doc(firestore, `rooms/AllRooms`);
+    const usersRoomsRef = collection(documentRef, `userRooms`);
+    const userRoomDocRef = doc(usersRoomsRef, pathRoom);
+
+   await deleteDoc(userRoomDocRef).then(()=> {
+    router.push("/")
+   })
+
   }
 
   function handleShowRoomMessages(coll) {
@@ -472,12 +485,15 @@ setRemovedUsers([]);
               {
                 ChatOpt ?
                 <>
-                <div className='chat-private-public'>
+                <div className='chat-options'>
           <button onClick={() => handlePublicModal()}>Add +</button>
+          <button onClick={() => deleteChatRoom()}>Delete</button>
           {/*<button disabled={true}>Private</button>*/}
         </div>
                 </>
-                : <></>
+                : 
+                <>
+                </>
               }
             </div>
           </section>
