@@ -9,14 +9,14 @@ export default function Dashboard(props) {
         props.roomId == props.currentRoom ?
         <>
         
-        <div style={{backgroundColor: props.roomId == props.currentRoom ? "rgba(255, 255, 255, 0.05)" : ""}} key={props.key} className='chat-div'>
+        <div style={{backgroundColor: props.roomId == props.currentRoom ? props.theme ? "rgba(0, 0, 0, 0.5)" : "rgba(255, 255, 255, 0.05)" : ""}} key={props.key} className='chat-div'>
                 <img className='room-profile' src={props.roomImage}></img>
                 <div className='chat-details-flex'>
-                  <h3 className='roomname'>{props.roomName}</h3>
+                  <h3 style={{color: props.theme ? "black" : "white"}} className='roomname'>{props.roomName}</h3>
                   <div className='lastMessage-info-flex'>
-                    <h5>{props.lastMessage}</h5>
+                    <h5 style={{color: props.theme ? "rgba(0, 0, 0, 0.8)" : "rgba(255, 255, 255, 0.5)"}} className='lastmessage-div-text'>{props.lastMessage}</h5>
                     <div className='lastTime-flex'>
-                      <h5 className='lastTime'>{props.lastMessageTime}</h5>
+                      <h5 style={{color: props.theme ? "rgba(0, 0, 0, 0.8)" : "rgba(255, 255, 255, 0.5)"}} className='lastTime'>{props.lastMessageTime}</h5>
                     </div>
                   </div>
                 </div>
@@ -29,14 +29,14 @@ export default function Dashboard(props) {
         <div onClick={() => {
           props.messageList.splice(0, props.messageList.length);
          // props.getMessages();
-        }} style={{backgroundColor: props.roomId == props.currentRoom ? "rgba(255, 255, 255, 0.05)" : ""}} key={props.key} className='chat-div'>
+        }} style={{backgroundColor: props.roomId == props.currentRoom ? props.theme ? "rgba(0, 0, 0, 1)" : "rgba(255, 255, 255, 0.05)" : ""}} key={props.key} className='chat-div'>
                 <img className='room-profile' src={props.roomImage}></img>
                 <div className='chat-details-flex'>
-                  <h3 className='roomname'>{props.roomName}</h3>
+                  <h3 style={{color: props.theme ? "black" : "white"}} className='roomname'>{props.roomName}</h3>
                   <div className='lastMessage-info-flex'>
-                    <h5>{props.lastMessage}</h5>
+                    <h5 style={{color: props.theme ? "rgba(0, 0, 0, 0.8)" : "rgba(255, 255, 255, 0.5)"}} className='lastmessage-div-text'>{props.lastMessage}</h5>
                     <div className='lastTime-flex'>
-                      <h5 className='lastTime'>{props.lastMessageTime}</h5>
+                      <h5 style={{color: props.theme ? "rgba(0, 0, 0, 0.8)" : "rgba(255, 255, 255, 0.5)"}} className='lastTime'>{props.lastMessageTime}</h5>
                     </div>
                   </div>
                 </div>

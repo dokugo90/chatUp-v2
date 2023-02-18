@@ -20,8 +20,11 @@ body {
   overflow-x: hidden;
 }
 
-body {
+#chat-body {
   background-color: var(--background-color);
+}
+
+body {
   font-family: var(--main-font);
 }
 
@@ -54,28 +57,6 @@ a {
 
 i {
   transition: .2s;
-}
-
-.cancel-public-btn {
-  background-color: #f50057;
-  padding: 9px;
-  border: none;
-  width: 100%;
-  border-radius: 5px;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.create-public-btn {
-  background-color: #3f51b5;
-  padding: 9px;
-  border: none;
-  width: 100%;
-  border-radius: 5px;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
 }
 
 .overlay {
@@ -112,7 +93,7 @@ i {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  height: calc(80% - 10px);
+  height: calc(100vh - 120px);
 }
 
 #body-message::-webkit-scrollbar {
@@ -152,6 +133,27 @@ i {
 }
 
 @media (min-width: 790px) {
+  .cancel-public-btn {
+    background-color: #f50057;
+    padding: 9px;
+    border: none;
+    width: 100%;
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  .create-public-btn {
+    background-color: #3f51b5;
+    padding: 9px;
+    border: none;
+    width: 100%;
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+  }
   #dashboard {
     width: var(--reponsive);
     height: 100vh;
@@ -202,7 +204,7 @@ i {
   }
   
   .icon-btn:hover {
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: rgba(0, 0, 0, 0.5);
   
   }
   
@@ -269,7 +271,7 @@ i {
   }
   
   .chat-div:hover {
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: rgba(0, 0, 0, 0.5);
   }
   
   .room-profile {
@@ -333,6 +335,9 @@ i {
     display: flex;
     width: 100%;
     justify-content: flex-end;
+    position: absolute;
+    right: 1%;
+    width: 50px;
   }
   
   #signin-div {
@@ -439,7 +444,7 @@ i {
   }
   
   .chat-private-public button:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(0, 0, 0, 0.5);
   }
   
   .create-public-flex {
@@ -449,7 +454,7 @@ i {
   }
   
   .create-public {
-    width: clamp(150px, 20%, 200px);
+    width: 200px;
     height: 190px;
     background-color: #555;
     margin-top: 100px;
@@ -523,7 +528,7 @@ i {
   }
 
   .users-list:hover {
-    background-color: rgba(255, 255, 255, 0.5);
+    background-color: rgba(0, 0, 0, 0.5);
   }
 
   .users-photo {
@@ -589,7 +594,7 @@ i {
   }
   
   .chat-options button:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(0, 0, 0, 0.5);
   }
 
   .rename-modal-flex {
@@ -690,6 +695,13 @@ i {
     background-color: rgba(255, 255, 255, 0.1);
   }
 
+  .lastmessage-div-text {
+    width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
 }
 
 
@@ -714,7 +726,7 @@ i {
     flex-direction: column;
     float: left;
     border-right: .7px solid var(--border-colors);
-    padding: 0px;
+    padding-top: 20px;
     overflow-y: hidden;
     overflow-x: hidden;
   }
@@ -802,7 +814,7 @@ i {
   }
   
   .chats-container {
-    margin-top: 20px;
+    margin-top: 0px;
     display: flex;
     flex-direction: column;
     overflow-y: auto;
@@ -910,6 +922,9 @@ i {
     display: flex;
     width: 100%;
     justify-content: flex-end;
+    position: absolute;
+    right: 1%;
+    width: 50px;
   }
   
   #signin-div {
@@ -1018,7 +1033,7 @@ i {
   }
   
   .create-public {
-    width: clamp(150px, 20%, 200px);
+    width: 150px;
     height: 190px;
     background-color: #555;
     margin-top: 100px;
@@ -1048,6 +1063,30 @@ i {
     margin-top: 10px;
     width: 100%;
     gap: 20px;
+  }
+
+  .cancel-public-btn {
+    background-color: #f50057;
+    padding: 9px;
+    border: none;
+    width: 65px;
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 10px;
+  }
+  
+  .create-public-btn {
+    background-color: #3f51b5;
+    padding: 9px;
+    border: none;
+    width: 65px;
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 10px;
   }
 
   .users-list-flex {

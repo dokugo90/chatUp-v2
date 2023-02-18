@@ -2,7 +2,7 @@
 "use client";
 
 import Image from 'next/image';
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Inter } from '@next/font/google'
 import "src/app/globals.css";
 import { handleAllUserChats } from '@/utils/allChats';
@@ -72,7 +72,11 @@ const [addUsersModal, showAddUsersModal] = useState(false);
 
 const [usersList, setUsersList] = useState([]);
 const [removedUsers, setRemovedUsers] = useState([]);
-const [currentRoomId, setCurrentRoomId] = useState()
+const [currentRoomId, setCurrentRoomId] = useState();
+const [theme, setTheme] = useState(false);
+const black = "black";
+const white = "white";
+const mainColor = "#242424";
 
 const addedRoomUsers = useRef([
 
@@ -255,7 +259,7 @@ const publicStore = getFirestore();
     const regex = /^\s*$/;
 
 
-    if (!regex.test(userRoomName) && userRoomName.length <= 20) {
+    if (!regex.test(userRoomName) && userRoomName.length >= 2) {
       addDoc(usersRoomsRef, {
         roomName: userRoomName.trim(),
         admin: getAuth().currentUser.uid,
@@ -280,7 +284,7 @@ const publicStore = getFirestore();
       setUsersList([...usersList, ...removedUsers]);
       setRemovedUsers([]);*/
       } else {
-        alert("Room name must include a character, and can't be more than 20 characters")
+        alert("Room name must include a character, and can't be less than 2 characters")
       }
   }
 
@@ -479,7 +483,7 @@ const publicStore = getFirestore();
 
     const regex = /^\s*$/;
 
-    if (!regex.test(newName) && newName.length <= 20) {
+    if (!regex.test(newName) && newName.length >= 2) {
       updateDoc(userRoomDocRef, {
         roomName: newName.trim(),
       }).then(() => {
@@ -493,7 +497,7 @@ const publicStore = getFirestore();
       setNewName("")
     });
     } else {
-      alert("Room name must include a character, and can't be more than 20 characters");
+      alert("Room name must include a character, and can't be less than 2 characters");
     }
   }
 
@@ -515,7 +519,33 @@ const publicStore = getFirestore();
       alert(err);
     });
   }
-    
+
+  function handleTheme() {
+    if (!theme) {
+      setTheme(true)
+      if (typeof window !== "undefined") {
+        localStorage.setItem("chattheme", "light")
+      }
+    } else {
+      setTheme(false);
+      if (typeof window !== "undefined") {
+        localStorage.setItem("chattheme", "dark")
+      }
+    }
+  }
+
+  useEffect(() => {
+    if (typeof window != "undefined") {
+      if (localStorage.getItem("chattheme") && localStorage.getItem("chattheme") == "dark") {
+        setTheme(false);
+      } else if (localStorage.getItem("chattheme") && localStorage.getItem("chattheme") == "light") {
+        setTheme(true)
+      } else {
+        setTheme(false)
+      }
+    }  
+  }, [])
+
     if (!return404) {
       return (
         <>
@@ -523,32 +553,32 @@ const publicStore = getFirestore();
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"></link>
     <title>{chats[pathId].roomName}</title>
         <main id='chat-body'>
-          <section id='dashboard'>
+          <section style={{backgroundColor: theme ? "white" : "#242424", borderRight: theme ? ".7px solid rgba(0, 0, 0, 0.1)" : ".7px solid rgba(255, 255, 255, 0.1)"}} id='dashboard'>
             <div className='dashboard-header-flex'>
               <div className='dashboard-header'>
               <img title={`${username}`} className='user-profile' src={`${profilePic}`}></img>
-                <h1>Chats</h1>
+                <h1 style={{color: theme ? "#242424" : "white"}}>Chats</h1>
                 <div className='dashboard-header-buttons'>
-                  <button onClick={() => Authentication().signOutUser()} className='icon-btn'><i className='material-icons'>logout</i></button>
+                  <button style={{color: theme ? "#242424" : "white"}} onClick={() => Authentication().signOutUser()} className='icon-btn'><i className='material-icons'>logout</i></button>
                   <div className='chat-add-opt'>
-              <button ref={add_btn} onClick={() => handleChatPrivacyOptions()} className='icon-btn'><i className='material-icons'>add</i></button>
+              <button style={{color: theme ? "#242424" : "white"}} ref={add_btn} onClick={() => handleChatPrivacyOptions()} className='icon-btn'><i className='material-icons'>add</i></button>
               {
         modal ?
         <>
-        <div className='chat-private-public'>
-          <button onClick={() => handlePublicModal()}>Public</button>
+        <div style={{backgroundColor: theme ? "white" : "#555", boxShadow: theme ? "0px 10px 10px #555" : "0px 5px 5px white"}} className='chat-private-public'>
+          <button style={{ color: theme ? "black" : "white"}} onClick={() => handlePublicModal()}>Public</button>
           {/*<button disabled={true}>Private</button>*/}
         </div>
         </>
         : <></>
       }
               </div>
-                  <button className='icon-btn'><i className='material-icons'>light_mode</i></button>
+                  <button style={{color: theme ? "#242424" : "white"}} onClick={() => handleTheme()} className='icon-btn'><i className='material-icons'>{ theme ? "mode_night" : "light_mode"}</i></button>
                 </div>
               </div>
             </div>
             <div className='filter-input-flex'>
-              <input onChange={e => setFilterText(e.target.value)} className='filter-input' type="text" placeholder='Search chats'></input>
+              <input style={{color: theme ? "#242424" : "white"}} onChange={e => setFilterText(e.target.value)} className='filter-input' type="text" placeholder='Search chats'></input>
             </div>
             <div className='chats-container'>
           {
@@ -562,6 +592,7 @@ const publicStore = getFirestore();
                       roomId={item.roomId}
                       getMessages={handleShowRoomMessages}
                       messageList={userMessagesList}
+                      theme={theme}
                       currentIndex={findCurrentIndex()}
                       currentRoom={pathRoom}
                       roomName={item.roomName}
@@ -579,33 +610,33 @@ const publicStore = getFirestore();
           }
             </div>
           </section>
-          <section id='chat-room-info'>
+          <section style={{backgroundColor: theme ? "white" : "#242424", borderBottom: theme ? ".7px solid rgba(0, 0, 0, 0.1)" : ".7px solid rgba(255, 255, 255, 0.1)"}} id='chat-room-info'>
             <img className='room-profile-select'
             src={`https://avatars.dicebear.com/api/initials/${chats[pathId].roomName[0]}${chats[pathId].roomName.includes(' ') ? chats[pathId].roomName.split(' ')[1] : chats[pathId].roomName[1]}m.svg`}>
             </img>
             <div className='chat-room-name'>
-              <h4>{chats[pathId].roomName}</h4>
-              <h4 className='lastmessage-text'><span className='message-time-sent'>Last message at </span>{chats[pathId].lastMessageTime}</h4>
+              <h4 style={{color: theme ? "#242424" : "white"}}>{chats[pathId].roomName}</h4>
+              <h4 style={{color: theme ? "rgba(0, 0, 0, 0.8)" : "rgba(255, 255, 255, 0.5)"}}  className='lastmessage-text'><span className='message-time-sent'>Last message at </span>{chats[pathId].lastMessageTime}</h4>
             </div>
             <div className='more-horiz-room-btn-flex'>
-              <button onClick={() => handleChatOptions()} className='icon-btn'><i className='material-icons'>more_horiz</i></button>
+              <button style={{color: theme ? "#242424" : "white"}} onClick={() => handleChatOptions()} className='icon-btn'><i className='material-icons'>more_horiz</i></button>
               {
                 ChatOpt ?
                 <>
                 {
                   chats[pathId].admin == uuid 
                   ?
-                  <div className='chat-options'>
-          <button onClick={() => handleAddUsersModal()}>Add</button>
-          <button onClick={() => handleRenameModal()}>Rename</button>
-          <button onClick={() => deleteChatRoom()}>Delete</button>
+                  <div style={{backgroundColor: theme ? "white" : "#555", boxShadow: theme ? "0px 10px 10px #555" : ""}} className='chat-options'>
+          <button style={{color: theme ? "black" : "white"}} onClick={() => handleAddUsersModal()}>Add</button>
+          <button style={{color: theme ? "black" : "white"}} onClick={() => handleRenameModal()}>Rename</button>
+          <button style={{color: theme ? "black" : "white"}} onClick={() => deleteChatRoom()}>Delete</button>
           {/*<button disabled={true}>Private</button>*/}
         </div>
         : 
         <>
-        <div className='chat-options-non-admin'>
-          <button onClick={() => handleAddUsersModal()}>Add</button>
-          <button onClick={() => removeUser()}>Leave</button>
+        <div style={{backgroundColor: theme ? "white" : "#555", boxShadow: theme ? "0px 10px 10px #555" : ""}} className='chat-options-non-admin'>
+          <button style={{color: theme ? "black" : "white"}} onClick={() => handleAddUsersModal()}>Add</button>
+          <button style={{color: theme ? "black" : "white"}} onClick={() => removeUser()}>Leave</button>
         </div>
         </>
                 }
@@ -617,13 +648,13 @@ const publicStore = getFirestore();
               }
             </div>
           </section>
-          <section id='body-message' class='main-content'>
+          <section style={{backgroundColor: theme ? "white" : "#242424"}} id='body-message' class='main-content'>
           <div className='message-card-flex'>
           {
             userMessagesList.filter((sent) => sent.messageId == chats[pathId].roomId).map((item, index) => (
               <>
               
-                <MessageCard image={item.messageImage} message={item.textMessage} sender={item.sender} timesent={item.sentTime} />
+                <MessageCard theme={theme} image={item.messageImage} message={item.textMessage} sender={item.sender} timesent={item.sentTime} />
               
               </>
             ))
@@ -633,8 +664,8 @@ const publicStore = getFirestore();
         publicModal ?
         <>
           <div className='create-public-flex'>
-            <div className='create-public'>
-              <input onChange={e => setUserRoomName(e.target.value)} className='chat-name-input' type="text" placeholder='Chat Name'></input>
+            <div style={{backgroundColor: theme ? "white" : "#555", boxShadow: theme ? "0px 10px 10px #555" : ""}} className='create-public'>
+              <input style={{backgroundColor: theme ? "rgba(0, 0, 0, 0.3)" : "#242424", color: theme ? "black" : "white"}} maxLength="20" minLength="2" onChange={e => setUserRoomName(e.target.value)} className='chat-name-input' type="text" placeholder='Chat Name'></input>
               <div className='users-list-flex'>
               {
                 usersList.filter((currUser) => currUser.usermail !== email).map((item, index) => (
@@ -650,8 +681,8 @@ const publicStore = getFirestore();
                   }} className='users-list'>
                     <img src={item.pfp} className='users-photo'></img>
                     <div>
-                      <p className='users-list-name'>{item.usersName}</p>
-                      <p className='users-list-email'>{item.usermail}</p>
+                      <p style={{color: theme ? "black" : "white"}} className='users-list-name'>{item.usersName}</p>
+                      <p style={{color: theme ? "rgba(0, 0, 0, 0.5)" : "rgba(255, 255, 255, 0.7)"}} className='users-list-email'>{item.usermail}</p>
                       </div>
                   </div>
                   </>
@@ -673,8 +704,8 @@ const publicStore = getFirestore();
         renameShow ?
         <>
           <div className='rename-modal-flex'>
-            <div className='rename-modal'>
-          <input onChange={e => setNewName(e.target.value)} className='chat-name-input' type="text" placeholder='New Chat Name'></input>
+            <div style={{backgroundColor: theme ? "white" : "#555", boxShadow: theme ? "0px 10px 10px #555" : ""}} className='rename-modal'>
+          <input style={{backgroundColor: theme ? "rgba(0, 0, 0, 0.3)" : "#242424", color: theme ? "black" : "white"}} maxLength="20" minLength="2" onChange={e => setNewName(e.target.value)} className='chat-name-input' type="text" placeholder='New Chat Name'></input>
           <div className='public-btns-flex'>
                 <button onClick={() => handleRenameModal()} className='cancel-public-btn'>CANCEL</button>
                 <button onClick={() => renameRoom()} className='create-public-btn'>RENAME</button>
@@ -691,7 +722,7 @@ const publicStore = getFirestore();
         addUsersModal ?
         <>
          <div className='add-person-modal-flex'>
-            <div className='add-person-modal'>
+            <div style={{backgroundColor: theme ? "white" : "#555", boxShadow: theme ? "0px 10px 10px #555" : ""}} className='add-person-modal'>
               <div className='add-person-flex'>
               {
                 usersList
@@ -711,8 +742,8 @@ const publicStore = getFirestore();
                   }} className='users-list'>
                     <img src={item.pfp} className='users-photo' />
                     <div>
-                      <p className='users-list-name'>{item.usersName}</p>
-                      <p className='users-list-email'>{item.usermail}</p>
+                      <p style={{color: theme ? "black" : "white"}} className='users-list-name'>{item.usersName}</p>
+                      <p style={{color: theme ? "rgba(0, 0, 0, 0.5)" : "rgba(255, 255, 255, 0.7)"}} className='users-list-email'>{item.usermail}</p>
                     </div>
                   </div>
                   </>
@@ -732,11 +763,11 @@ const publicStore = getFirestore();
         </>
       }
       </section>
-          <footer className='page-footer'>
+          <footer style={{backgroundColor: theme ? "white" : "#242424", borderTop: theme ? ".7px solid rgba(0, 0, 0, 0.1)" : ".7px solid rgba(255, 255, 255, 0.1)"}} className='page-footer'>
               <div className='message-sender-container'>
-              <button className='icon-btn'><i className='material-icons'>emoji_emotions</i></button>
-                <input value={userMessage} onChange={e => setUserMessage(e.target.value)} className='message-input' type="text" placeholder='Aa'></input>
-                <button onMouseOver={() => {
+              {/*<button onClick={() => handleEmojiPicker()} className='icon-btn'><i className='material-icons'>emoji_emotions</i></button>*/}
+                <input style={{color: theme ? "black" : "white"}} maxLength="300" value={userMessage} onChange={e => setUserMessage(e.target.value)} className='message-input' type="text" placeholder='Aa'></input>
+                <button style={{color: theme ? "#242424" : "white"}} onMouseOver={() => {
                   //setCurrentPath(chats.current[0].roomId)
                 }} onClick={() => handleSendRoomMessages()} className='icon-btn'><i className='material-icons'>send</i></button>
               </div>

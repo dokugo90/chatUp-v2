@@ -86,6 +86,7 @@ export default function Home() {
   const [fetchedData, setFetched] = useState("");
   const [currentPath, setCurrentPath] = useState("");
   const [clearAddedUsers, setClearAddedUsers] = useState(false);
+  const [theme, setTheme] = useState(false);
   const add_btn = useRef();
   const unsubscribeRef = useRef();
   const users_div = useRef();
@@ -223,7 +224,7 @@ const usersRoomsRef = collection(documentRef, `userRooms`);
 //const individualRefs = collection(usersRoomsRef, `${userRoomName}`)
 const regex = /^\s*$/;
 
-if (!regex.test(userRoomName) && userRoomName.length <= 20) {
+if (!regex.test(userRoomName) && userRoomName.length >= 2) {
 addDoc(usersRoomsRef, {
   roomName: userRoomName.trim(),
   admin: getAuth().currentUser.uid,
@@ -259,7 +260,7 @@ setTimeout(() => {
 setUsersList([...usersList, ...removedUsers]);
 setRemovedUsers([]);*/
 } else {
-  alert("Room name must include a character, and can't be more than 20 characters")
+  alert("Room name must include a character, and can't be less than 2 characters")
 }
 
 /*addDoc(individualRefs, {})
@@ -396,22 +397,48 @@ const LoadingIndicator = () => (
   <div>Loading...</div>
 );
 
+function handleTheme() {
+  if (!theme) {
+    setTheme(true)
+    if (typeof window !== "undefined") {
+      localStorage.setItem("chattheme", "light")
+    }
+  } else {
+    setTheme(false);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("chattheme", "dark")
+    }
+  }
+}
+
+useEffect(() => {
+  if (typeof window != "undefined") {
+    if (localStorage.getItem("chattheme") && localStorage.getItem("chattheme") == "dark") {
+      setTheme(false);
+    } else if (localStorage.getItem("chattheme") && localStorage.getItem("chattheme") == "light") {
+      setTheme(true)
+    } else {
+      setTheme(false)
+    }
+  }  
+}, [])
+
   if (signedIn) {
     return (
       <>
       <script src="/node_modules/material-design-lite/material.min.js" defer></script>
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"></link>
   <title>ChatUp v2</title>
-      <main id='chat-body'>
-        <section id='dashboard'>
+      <main style={{backgroundColor: theme ? "white" : "#242424", borderRight: theme ? ".7px solid rgba(0, 0, 0, 0.1)" : ".7px solid rgba(255, 255, 255, 0.1)"}} id='chat-body'>
+        <section style={{backgroundColor: theme ? "white" : "#242424", borderRight: theme ? ".7px solid rgba(0, 0, 0, 0.1)" : ".7px solid rgba(255, 255, 255, 0.1)"}} id='dashboard'>
           <div className='dashboard-header-flex'>
             <div className='dashboard-header'>
               <img title={`${username}`} className='user-profile' src={`${profilePic}`}></img>
-              <h1 className='chats-header-text'>Chats</h1>
+              <h1 style={{color: theme ? "#242424" : "white"}} className='chats-header-text'>Chats</h1>
               <div className='dashboard-header-buttons'>
-                <button onClick={() => Authentication().signOutUser()} className='icon-btn'><i className='material-icons'>logout</i></button>
+                <button style={{color: theme ? "#242424" : "white"}} onClick={() => Authentication().signOutUser()} className='icon-btn'><i className='material-icons'>logout</i></button>
                 <div className='chat-add-opt'>
-                <button onClick={() => handleChatPrivacyOptions()} className='icon-btn'><i ref={add_btn} className='material-icons'>add</i></button>
+                <button style={{color: theme ? "#242424" : "white"}} onClick={() => handleChatPrivacyOptions()} className='icon-btn'><i ref={add_btn} className='material-icons'>add</i></button>
                 {
           modal ?
           <>
@@ -423,12 +450,12 @@ const LoadingIndicator = () => (
           : <></>
         }
                 </div>
-                <button className='icon-btn'><i className='material-icons'>light_mode</i></button>
+                <button style={{color: theme ? "#242424" : "white"}} onClick={() => handleTheme()} className='icon-btn'><i className='material-icons'>{ theme ? "mode_night" : "light_mode"}</i></button>
               </div>
             </div>
           </div>
           <div className='filter-input-flex'>
-            <input onChange={e => setFilterText(e.target.value)} className='filter-input' type="text" placeholder='Search chats'></input>
+            <input style={{color: theme ? "#242424" : "white"}} onChange={e => setFilterText(e.target.value)} className='filter-input' type="text" placeholder='Search chats'></input>
           </div>
           <div className='chats-container'>
             {/* {
@@ -461,6 +488,7 @@ const LoadingIndicator = () => (
                         roomId={item.roomId}
                         currentIndex={findCurrentIndex()}
                         currentRoom={"homepage"}
+                        theme={theme}
                         roomName={item.roomName}
                         lastMessage={item.lastMessage}
                         lastMessageTime={item.lastMessageTime}
@@ -481,7 +509,7 @@ const LoadingIndicator = () => (
           <>
             <div className='create-public-flex'>
               <div className='create-public'>
-                <input onChange={e => setUserRoomName(e.target.value)} className='chat-name-input' type="text" placeholder='Chat Name'></input>
+                <input maxLength="20" minLength="2" onChange={e => setUserRoomName(e.target.value)} className='chat-name-input' type="text" placeholder='Chat Name'></input>
                 <div className='users-list-flex'>
                 {
                   usersList.filter((currUser) => currUser.usermail !== email).map((item, index) => (
