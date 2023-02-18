@@ -41,11 +41,11 @@ import MessageCard from '@/app/components/messageCard';
 
 export default function chatRoom({ pathId, pathRoom, allChats }) {
   // eslint-disable-next-line react-hooks/rules-of-hooks
- //const [chats, setChats] = useState(allChats);
- const chats = useRef(allChats);
+ const [chats, setChats] = useState(allChats);
+ //const chats = useRef(allChats);
 
   const [filterText, setFilterText] = useState("");
-  const [filteredChats, setFilteredChats] = useState(chats.current);
+  const [filteredChats, setFilteredChats] = useState(chats);
   const [profilePic, setProfilePic] = useState("");
 const [username, setUsername] = useState("");
 const [email, setEmail] = useState("");
@@ -77,6 +77,7 @@ const addedRoomUsers = useRef([
 ])
 
 const router = useRouter();
+const publicStore = getFirestore();
 
   function Authentication() {
     return {
@@ -176,12 +177,12 @@ const router = useRouter();
 
   useEffect(() => {
     
-    setFilteredChats(chats.current.filter(item => item.roomName.toLowerCase().includes(filterText.toLowerCase())));
+    setFilteredChats(chats.filter(item => item.roomName.toLowerCase().includes(filterText.toLowerCase())));
     
   }, [filterText])
 
   function handle404() {
-    if (chats.current[pathId].roomId != pathRoom) {
+    if (chats[pathId].roomId != pathRoom) {
       setReturn404(true)
     } else {
       setReturn404(false)
@@ -286,7 +287,7 @@ setRemovedUsers([]);
     const documentRef = doc(firestore, `rooms/AllRooms`);
     const usersRoomsRef = collection(documentRef, `userRooms`);
     const userRoomDocRef = doc(usersRoomsRef, pathRoom);
-    const userRoomSubcollection = query(collection(userRoomDocRef, `${chats.current[pathId].roomName}`), orderBy("sentMessage"));
+    const userRoomSubcollection = query(collection(userRoomDocRef, `${chats[pathId].roomName}`), orderBy("sentMessage"));
 
     setUserMessagesList([]);
 
@@ -351,7 +352,7 @@ setRemovedUsers([]);
     const documentRef = doc(firestore, `rooms/AllRooms`);
     const usersRoomsRef = collection(documentRef, `userRooms`);
     const userRoomDocRef = doc(usersRoomsRef, pathRoom);
-    const userRoomSubcollection = collection(userRoomDocRef, `${chats.current[pathId].roomName}`);
+    const userRoomSubcollection = collection(userRoomDocRef, `${chats[pathId].roomName}`);
 
     const regex = /^\s*$/;
 
@@ -362,7 +363,7 @@ setRemovedUsers([]);
         userImage: getAuth().currentUser.photoURL,
         sentBy: getAuth().currentUser.displayName,
         time: getTextDate(),
-        roomId: chats.current[pathId].roomId,
+        roomId: chats[pathId].roomId,
       }).catch((err) => {
         alert(err);
       })
@@ -389,7 +390,7 @@ setRemovedUsers([]);
 
   let myRef;
 
-  function handleAllUserChats() {
+  /*function handleAllUserChats() {
     
     const firestore = getFirestore();
 const documentRef = doc(firestore, `rooms/AllRooms`);
@@ -398,7 +399,7 @@ const parser = query(usersRoomsRef, orderBy("createdRoom"))
  myRef = onSnapshot(parser, snapshot => {
   snapshot.docChanges().forEach((change) => {
     if (change.type == "added") {
-      chats.current.push({
+      chats.push({
         roomName: change.doc.data().roomName,
         lastMessage: change.doc.data().lastMessage,
         lastMessageTime: change.doc.data().lastMessageTime,
@@ -406,8 +407,8 @@ const parser = query(usersRoomsRef, orderBy("createdRoom"))
         members: change.doc.data().members,
         admin: change.doc.data().admin,
       })
-      //setChats([...chats])
-      setFilteredChats([...chats.current])
+      setChats([...chats])
+      setFilteredChats([...chats])
     } if (change.type == "modified") {
       //chats.current[pathId].lastMessage = change.doc.data().lastMessage
       //chats.current[pathId].lastMessageTime = change.doc.data().lastMessageTime;
@@ -432,7 +433,70 @@ timer.current = setTimeout(() => {
       return () => {
         ignore = true;
       }
-  }, [email])
+  }, [])*/
+
+  /*function handleAllUserChats() {
+    const firestore = getFirestore();
+    const documentRef = doc(firestore, `rooms/AllRooms`);
+    const usersRoomsRef = collection(documentRef, `userRooms`);
+    const parser = query(usersRoomsRef, orderBy("createdRoom"));
+  
+    useEffect(() => {
+      const unsubscribe = onSnapshot(parser, snapshot => {
+        const newChats = [];
+        snapshot.forEach(doc => {
+          newChats.push({
+            roomName: doc.data().roomName,
+            lastMessage: doc.data().lastMessage,
+            lastMessageTime: doc.data().lastMessageTime,
+            roomId: doc.id,
+            members: doc.data().members,
+            admin: doc.data().admin
+          });
+        });
+        setChats([...newChats]);
+        setFilteredChats([...newChats])
+        alert("Got Data Rwq")
+      });
+  
+      return () => {
+        unsubscribe();
+      };
+    }, [parser]);
+  
+    return chats;
+  }*/
+
+  useEffect(() => {
+    const firestore = getFirestore();
+    const documentRef = doc(firestore, `rooms/AllRooms`);
+    const usersRoomsRef = collection(documentRef, `userRooms`);
+    const parser = query(usersRoomsRef, orderBy("createdRoom"));
+    const unsubscribe = onSnapshot(parser, snapshot => {
+      const newChats = [];
+      snapshot.forEach(doc => {
+        newChats.push({
+          roomName: doc.data().roomName,
+          lastMessage: doc.data().lastMessage,
+          lastMessageTime: doc.data().lastMessageTime,
+          roomId: doc.id,
+          members: doc.data().members,
+          admin: doc.data().admin
+        });
+      });
+      setChats([...newChats]);
+      setFilteredChats([...newChats])
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
+  /*useEffect(() => {
+    handleAllUserChats()
+  }, [])*/
+
 
   /*useEffect(() => {
     const firestore = getFirestore();
@@ -485,16 +549,16 @@ const parser = query(usersRoomsRef, orderBy("createdRoom"))
   }
 
   function findCurrentIndex(e) {
-      return chats.current.findIndex(item => item.roomId == currentPath)
+      return chats.findIndex(item => item.roomId == currentPath)
   } 
 
   function cleanChatsArray() {
-    for (let i = 0; i < chats.current.length; i++) {
-        if (chats.current[i].admin == `${uuid}` || chats.current[i].members.some((user) => user.email === email)) {
-          chats.current.pop();
+    for (let i = 0; i < chats.length; i++) {
+        if (chats[i].admin == `${uuid}` || chats[i].members.some((user) => user.email === email)) {
+          chats.pop();
           //setChats([...chats])
          // chats.current = chats.current;
-          setFilteredChats([...chats.current])
+          setFilteredChats([...chats])
         } else {
           return;
         }
@@ -506,7 +570,7 @@ const parser = query(usersRoomsRef, orderBy("createdRoom"))
         <>
         <script src="/node_modules/material-design-lite/material.min.js" defer></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"></link>
-    <title>{chats.current[pathId].roomName}</title>
+    <title>{chats[pathId].roomName}</title>
         <main id='chat-body'>
           <section id='dashboard'>
             <div className='dashboard-header-flex'>
@@ -585,11 +649,11 @@ const parser = query(usersRoomsRef, orderBy("createdRoom"))
           </section>
           <section id='chat-room-info'>
             <img className='room-profile-select'
-            src={`https://avatars.dicebear.com/api/initials/${chats.current[pathId].roomName[0]}${chats.current[pathId].roomName.includes(' ') ? chats.current[pathId].roomName.split(' ')[1] : chats.current[pathId].roomName[1]}m.svg`}>
+            src={`https://avatars.dicebear.com/api/initials/${chats[pathId].roomName[0]}${chats[pathId].roomName.includes(' ') ? chats[pathId].roomName.split(' ')[1] : chats[pathId].roomName[1]}m.svg`}>
             </img>
             <div className='chat-room-name'>
-              <h4>{chats.current[pathId].roomName}</h4>
-              <h4 className='lastmessage-text'><span className='message-time-sent'>Last message at </span>{chats.current[pathId].lastMessageTime}</h4>
+              <h4>{chats[pathId].roomName}</h4>
+              <h4 className='lastmessage-text'><span className='message-time-sent'>Last message at </span>{chats[pathId].lastMessageTime}</h4>
             </div>
             <div className='more-horiz-room-btn-flex'>
               <button onClick={() => handleChatOptions()} className='icon-btn'><i className='material-icons'>more_horiz</i></button>
@@ -608,7 +672,7 @@ const parser = query(usersRoomsRef, orderBy("createdRoom"))
           <section id='body-message' class='main-content'>
           <div className='message-card-flex'>
           {
-            userMessagesList.filter((sent) => sent.messageId == chats.current[pathId].roomId).map((item, index) => (
+            userMessagesList.filter((sent) => sent.messageId == chats[pathId].roomId).map((item, index) => (
               <>
               
                 <MessageCard image={item.messageImage} message={item.textMessage} sender={item.sender} timesent={item.sentTime} />
