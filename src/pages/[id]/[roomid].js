@@ -32,6 +32,7 @@ import {
   serverTimestamp,
   Timestamp,
   deleteDoc,
+  startAfter,
 } from 'firebase/firestore';
 
 import Link from 'next/link';
@@ -316,7 +317,7 @@ const publicStore = getFirestore();
     const documentRef = doc(firestore, `rooms/AllRooms`);
     const usersRoomsRef = collection(documentRef, `userRooms`);
     const userRoomDocRef = doc(usersRoomsRef, pathRoom);
-    const userRoomSubcollection = query(collection(userRoomDocRef, `${chats[pathId].roomId}`), orderBy("sentMessage"), limit(100));
+    const userRoomSubcollection = query(collection(userRoomDocRef, `${chats[pathId].roomId}`), orderBy("sentMessage", "desc"), limit(50));
   
     setUserMessagesList([]);
   
