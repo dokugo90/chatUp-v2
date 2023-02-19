@@ -75,6 +75,10 @@ const [removedUsers, setRemovedUsers] = useState([]);
 const [currentRoomId, setCurrentRoomId] = useState();
 const [theme, setTheme] = useState(false);
 const [hideDashboard, setHideDashboard] = useState("");
+const [allMembers, showAllMembers] = useState(false);
+const [overlayFive, showOverlayFive] = useState(false);
+const [kickModal, showKickModal] = useState(false);
+const [overlaySix, showOverlaySix] = useState(false);
 const mainBody = useRef();
 const dashboard = useRef();
 const black = "black";
@@ -299,7 +303,7 @@ const publicStore = getFirestore();
     const userRoomDocRef = doc(usersRoomsRef, pathRoom);
 
    await deleteDoc(userRoomDocRef).then(() => {
-    router.push("/")
+      router.push("/")
    }).catch((err) => {
     alert("Please try again")
    }) 
@@ -572,28 +576,6 @@ const publicStore = getFirestore();
     }
   }
 
-  /*useEffect(() => {
-    if (!hideDashboard) {
-      setHideDashboard(true)
-      dashboard.current.classList.add("hide-dashboard")
-     // mainBody.current.classList.add("max-width")
-      dashboard.current.setAttribute("id", "")
-      hide_Btn.current.classList.add("flip")
-      if (typeof window !== "undefined") {
-        localStorage.setItem("hidedashboard", "hidden")
-      }
-    } else {
-      setHideDashboard(false)
-      dashboard.current.setAttribute("id", "dashboard")
-      dashboard.current.classList.remove("hide-dashboard")
-      hide_Btn.current.classList.remove("flip")
-      if (typeof window !== "undefined") {
-        localStorage.setItem("hidedashboard", "shown")
-      }
-     // mainBody.current.setAttribute("id", "adad")
-    }
-  }, [])*/
-
   useEffect(() => {
     if (typeof window != "undefined") {
       if (localStorage.getItem("hidedashboard") && localStorage.getItem("hidedashboard") == "hidden") {
@@ -624,6 +606,43 @@ const publicStore = getFirestore();
       }}
     }  
   }, [])
+
+  function handleAllMembers() {
+    if (!allMembers) {
+      showAllMembers(true)
+      showOverlayFive(true);
+      handleChatOptions()
+    } else {
+      showAllMembers(false)
+      showOverlayFive(false);
+    }
+  }
+
+  function handleKickUserModal() {
+    if (!kickModal) {
+      showKickModal(true)
+      showOverlaySix(true)
+      handleChatOptions()
+    } else {
+      showKickModal(false)
+      showOverlaySix(false)
+    }
+  }
+
+  function kickRoomUser(mail) {
+    const firestore = getFirestore();
+    const documentRef = doc(firestore, `rooms/AllRooms`);
+    const usersRoomsRef = collection(documentRef, `userRooms`);
+    const userRoomDocRef = doc(usersRoomsRef, pathRoom);
+
+    let updatedMembers = chats[pathId].members.filter((currUser) => currUser.email !== mail);
+
+    updateDoc(userRoomDocRef, {
+      members: updatedMembers
+    }).catch((err) => {
+      alert(err);
+    });
+  }
 
     if (!return404) {
       return (
@@ -706,16 +725,19 @@ const publicStore = getFirestore();
                   chats[pathId].admin == uuid 
                   ?
                   <div style={{backgroundColor: theme ? "white" : "#555", boxShadow: theme ? "0px 10px 10px #555" : ""}} className='chat-options'>
-          <button style={{color: theme ? "black" : "white"}} onClick={() => handleAddUsersModal()}>Add</button>
+          <button style={{color: theme ? "black" : "white"}} onClick={() => handleAddUsersModal()}>Add User</button>
           <button style={{color: theme ? "black" : "white"}} onClick={() => handleRenameModal()}>Rename</button>
           <button style={{color: theme ? "black" : "white"}} onClick={() => deleteChatRoom()}>Delete</button>
+          <button style={{color: theme ? "black" : "white"}} onClick={() => handleAllMembers()}>Members</button>
+          <button style={{color: theme ? "black" : "white"}} onClick={() => handleKickUserModal()}>Kick</button>
           {/*<button disabled={true}>Private</button>*/}
         </div>
         : 
         <>
         <div style={{backgroundColor: theme ? "white" : "#555", boxShadow: theme ? "0px 10px 10px #555" : ""}} className='chat-options-non-admin'>
-          <button style={{color: theme ? "black" : "white"}} onClick={() => handleAddUsersModal()}>Add</button>
+          <button style={{color: theme ? "black" : "white"}} onClick={() => handleAddUsersModal()}>Add User</button>
           <button style={{color: theme ? "black" : "white"}} onClick={() => removeUser()}>Leave</button>
+          <button style={{color: theme ? "black" : "white"}} onClick={() => handleAllMembers()}>Members</button>
         </div>
         </>
                 }
@@ -841,6 +863,69 @@ const publicStore = getFirestore();
 
         </>
       }
+      {
+        allMembers ?
+        <>
+          <div className='add-person-modal-flex'>
+            <div style={{backgroundColor: theme ? "white" : "#555", boxShadow: theme ? "0px 10px 10px #555" : ""}} className='add-person-modal'>
+              <div className='add-person-flex'>
+              {
+                usersList
+                .filter((currUser) => chats[pathId].members.some(member => member.email === currUser.usermail) || currUser.usersId == chats[pathId].admin)
+                .map((item, index) => (
+                  <>
+                  <div className='members-list'>
+                    <img src={item.pfp} className='users-photo' />
+                    <div>
+                      <p style={{color: theme ? "black" : "white"}} className='users-list-name'>{email === item.usermail ? chats[pathId].admin === uuid ? "You (owner)" : "You" : chats[pathId].admin == item.usersId ? `${item.usersName} (owner)` : item.usersName}</p>
+                      <p style={{color: theme ? "rgba(0, 0, 0, 0.5)" : "rgba(255, 255, 255, 0.7)"}} className='users-list-email'>{item.usermail}</p>
+                    </div>
+                  </div>
+                  </>
+                ))
+              }
+              </div>
+              <div className='public-btns-flex'>
+                <button onClick={() => handleAllMembers()} className='cancel-public-btn'>CLOSE</button>
+              </div>
+            </div>
+          </div>
+        </>
+        : <></>
+      }
+      {
+                kickModal ?
+                <>
+                  <div className='add-person-modal-flex'>
+            <div style={{backgroundColor: theme ? "white" : "#555", boxShadow: theme ? "0px 10px 10px #555" : ""}} className='add-person-modal'>
+              <div className='add-person-flex'>
+              {
+                usersList
+                .filter((currUser) => currUser.usermail !== email)
+                .filter((currUser) => chats[pathId].members.some(member => member.email === currUser.usermail))
+                .map((item, index) => (
+                  <>
+                  <div onClick={() => {
+                    kickRoomUser(item.usermail)
+                  }} className='users-list'>
+                    <img src={item.pfp} className='users-photo' />
+                    <div>
+                      <p style={{color: theme ? "black" : "white"}} className='users-list-name'>{email === item.usermail ? chats[pathId].admin === uuid ? "You (owner)" : "You" : chats[pathId].admin == item.usersId ? `${item.usersName} (owner)` : item.usersName}</p>
+                      <p style={{color: theme ? "rgba(0, 0, 0, 0.5)" : "rgba(255, 255, 255, 0.7)"}} className='users-list-email'>{item.usermail}</p>
+                    </div>
+                  </div>
+                  </>
+                ))
+              }
+              </div>
+              <div className='public-btns-flex'>
+                <button onClick={() => handleKickUserModal()} className='cancel-public-btn'>CLOSE</button>
+              </div>
+            </div>
+          </div>
+                </>
+                : <></>
+              }
       </section>
           <footer style={{backgroundColor: theme ? "white" : "#242424", borderTop: theme ? ".7px solid rgba(0, 0, 0, 0.1)" : ".7px solid rgba(255, 255, 255, 0.1)"}} className='page-footer'>
               <div className='message-sender-container'>
@@ -872,6 +957,16 @@ const publicStore = getFirestore();
             <div onClick={() => handleAddUsersModal()} className='overlay'></div>
             : <></>
           }
+          {
+            overlayFive ?
+            <div onClick={() => handleAllMembers()} className='overlay'></div>
+            : <></>
+          }
+          {
+            overlaySix ?
+            <div onClick={() => handleKickUserModal()} className='overlay'></div>
+            : <></>
+          }
         </main>
         </>
     )
@@ -894,201 +989,3 @@ export async function getServerSideProps({ params }) {
 }
 
 const app = initializeApp(firebaseConfig);
-
-//setShouldRun(false);
-            /*userMessagesList.current.push({
-              sender: change.doc.data().sentBy,
-                textMessage: change.doc.data().message,
-                messageImage: change.doc.data().userImage,
-                sentTime: change.doc.data().time,
-            })*/
-            //setUserMessagesList([...userMessagesList])
-
-
-  /*function handleAllUserChats() {
-    
-    const firestore = getFirestore();
-const documentRef = doc(firestore, `rooms/AllRooms`);
-const usersRoomsRef = collection(documentRef, `userRooms`);
-const parser = query(usersRoomsRef, orderBy("createdRoom"))
- myRef = onSnapshot(parser, snapshot => {
-  snapshot.docChanges().forEach((change) => {
-    if (change.type == "added") {
-      chats.push({
-        roomName: change.doc.data().roomName,
-        lastMessage: change.doc.data().lastMessage,
-        lastMessageTime: change.doc.data().lastMessageTime,
-        roomId: change.doc.id,
-        members: change.doc.data().members,
-        admin: change.doc.data().admin,
-      })
-      setChats([...chats])
-      setFilteredChats([...chats])
-    } if (change.type == "modified") {
-      //chats.current[pathId].lastMessage = change.doc.data().lastMessage
-      //chats.current[pathId].lastMessageTime = change.doc.data().lastMessageTime;
-      //setFilteredChats([...chats.current])
-      
-    }
-  })
-})
-
-timer.current = setTimeout(() => {
-  cleanChatsArray()
-}, 3000)
-
-  }
-
-  useEffect(() => {
-    let ignore = false;
-
-    if (!ignore && email != "") {
-      handleAllUserChats();
-      }
-      return () => {
-        ignore = true;
-      }
-  }, [])*/
-
-  /*function handleAllUserChats() {
-    const firestore = getFirestore();
-    const documentRef = doc(firestore, `rooms/AllRooms`);
-    const usersRoomsRef = collection(documentRef, `userRooms`);
-    const parser = query(usersRoomsRef, orderBy("createdRoom"));
-  
-    useEffect(() => {
-      const unsubscribe = onSnapshot(parser, snapshot => {
-        const newChats = [];
-        snapshot.forEach(doc => {
-          newChats.push({
-            roomName: doc.data().roomName,
-            lastMessage: doc.data().lastMessage,
-            lastMessageTime: doc.data().lastMessageTime,
-            roomId: doc.id,
-            members: doc.data().members,
-            admin: doc.data().admin
-          });
-        });
-        setChats([...newChats]);
-        setFilteredChats([...newChats])
-        alert("Got Data Rwq")
-      });
-  
-      return () => {
-        unsubscribe();
-      };
-    }, [parser]);
-  
-    return chats;
-  }*/
-
-  /*item.members.some((user) => user.email === email) || item.admin == uuid ? (
-                <>
-                <Link scroll={false} href="/[id]/[roomid]" as={`/${findCurrentIndex()}/${item.roomId}`}>
-                  <div onMouseOver={() => setCurrentPath(item.roomId)}>
-                    <Dashboard
-                      key={index}
-                      roomId={""}
-                      currentRoom={"homepage"}
-                      roomName={item.roomName}
-                      lastMessage={item.lastMessage}
-                      lastMessageTime={item.lastMessageTime}
-                      roomImage={`https://avatars.dicebear.com/api/initials/${item.roomName[0]}${item.roomName.includes(' ') ? item.roomName.split(' ')[1] : item.roomName[1]}m.svg`}
-                    />
-                  </div>
-                </Link>
-                </>
-              ) : (
-                <></>
-              )*/
-
-              /*function cleanChatsArray() {
-    for (let i = 0; i < chats.length; i++) {
-        if (chats[i].admin == `${uuid}` || chats[i].members.some((user) => user.email === email)) {
-          chats.pop();
-          //setChats([...chats])
-         // chats.current = chats.current;
-          setFilteredChats([...chats])
-        } else {
-          return;
-        }
-    }
-}*/
-
-  /*useEffect(() => {
-    handleAllUserChats()
-  }, [])*/
-
-
-  /*useEffect(() => {
-    const firestore = getFirestore();
-const documentRef = doc(firestore, `rooms/AllRooms`);
-const usersRoomsRef = collection(documentRef, `userRooms`);
-const parser = query(usersRoomsRef, orderBy("createdRoom"))
- const unsubscribe = onSnapshot(parser, snapshot => {
-  snapshot.docChanges().forEach((change) => {
-    if (change.type == "added") {
-      chats.current.push({
-        roomName: change.doc.data().roomName,
-        lastMessage: change.doc.data().lastMessage,
-        lastMessageTime: change.doc.data().lastMessageTime,
-        roomId: change.doc.id,
-        members: change.doc.data().members,
-        admin: change.doc.data().admin,
-      })
-      //setChats([...chats])
-      
-      setFilteredChats([...chats.current])
-      for (let i = 0; i < chats.current.length; i++) {
-        if (chats.current[i].admin == `${uuid}` || chats.current[i].members.some((user) => user.email === email)) {
-          chats.current.pop();
-          //setChats([...chats])
-         // setFilteredChats([...chats.current])
-        }
-      }
-    } if (change.type == "modified") {
-      //chats.current[pathId].lastMessage = change.doc.data().lastMessage
-      //chats.current[pathId].lastMessageTime = change.doc.data().lastMessageTime;
-      //setFilteredChats([...chats.current])
-      
-    }
-  })
-})
-
-    return () => {
-      unsubscribe()
-    }
-  }, [])*/
-
-  /*function handlelocalstorage() {
-    
-    if (typeof window !== 'undefined') {
-      const image = localStorage.getItem("profilePic")
-      return image;
-    } else {
-      return profilePic;
-    }
-  }*/
-
-  /* useEffect(() => {
-    if (shouldRun) {
-      setShouldRun(false)
-    } else {
-      setShouldRun(true)
-    }
-  }, [shouldRun]) */
-
-  /*useEffect(() => {
-    
-  
-   handleShowRoomMessages(pathId);
-  
-    
-  }, [pathId]);*/
-
-  /*.then(docRef => {
-        const userroomId = docRef.id;
-        const userRoomDocRef = doc(usersRoomsRef, userroomId);
-        const userRoomSubcollection = collection(userRoomDocRef, userRoomName);
-        return addDoc(userRoomSubcollection, {});
-      })*/

@@ -533,7 +533,7 @@ i {
     gap: 5px;
     height: 80px;
     overflow-y: auto;
-    overflow-x: hidden;
+    overflow-x: auto;
   }
 
   .users-list-flex::-webkit-scrollbar {
@@ -611,7 +611,7 @@ i {
     display: flex;
     flex-direction: column;
     width: 100px;
-    height: 150px;
+    height: 250px;
     background-color: #303030;
     align-items: center;
     justify-content: center;
@@ -684,7 +684,7 @@ i {
     gap: 5px;
     height: 130px;
     overflow-y: auto;
-    overflow-x: hidden;
+    overflow-x: auto;
   }
 
   .add-person-flex::-webkit-scrollbar {
@@ -709,7 +709,7 @@ i {
     display: flex;
     flex-direction: column;
     width: 100px;
-    height: 100px;
+    height: 150px;
     background-color: #303030;
     align-items: center;
     justify-content: center;
@@ -740,6 +740,20 @@ i {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  .members-list {
+    padding: 5px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    background-color: transparent;
+    border-radius: 5px;
+    gap: 10px;
+    transition: .1s;
+    color: white;
+    font-size: 13px;
+    user-select: none;
   }
 
 }
@@ -1136,7 +1150,7 @@ i {
     gap: 5px;
     height: 80px;
     overflow-y: auto;
-    overflow-x: hidden;
+    overflow-x: auto;
   }
 
   .users-list-flex::-webkit-scrollbar {
@@ -1214,7 +1228,7 @@ i {
     display: flex;
     flex-direction: column;
     width: 100px;
-    height: 150px;
+    height: 250px;
     background-color: #303030;
     align-items: center;
     justify-content: center;
@@ -1287,7 +1301,7 @@ i {
     gap: 5px;
     height: 130px;
     overflow-y: auto;
-    overflow-x: hidden;
+    overflow-x: auto;
   }
 
   .add-person-flex::-webkit-scrollbar {
@@ -1312,7 +1326,7 @@ i {
     display: flex;
     flex-direction: column;
     width: 100px;
-    height: 100px;
+    height: 150px;
     background-color: #303030;
     align-items: center;
     justify-content: center;
@@ -1336,6 +1350,20 @@ i {
   
   .chat-options-non-admin button:hover {
     background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .members-list {
+    padding: 5px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    background-color: transparent;
+    border-radius: 5px;
+    gap: 10px;
+    transition: .1s;
+    color: white;
+    font-size: 13px;
+    user-select: none;
   }
 }
 
