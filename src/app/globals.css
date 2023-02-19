@@ -124,7 +124,6 @@ i {
 
 .hide-dashboard {
   transform: translateX(-350px);
-  transition: .2s;
   display: none;
 }
 
@@ -203,7 +202,6 @@ i {
     cursor: pointer;
   }
   #dashboard {
-    transition: .2s;
     width: var(--reponsive);
     height: 100vh;
     background-color: var(--background-color);
