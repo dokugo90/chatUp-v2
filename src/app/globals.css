@@ -610,8 +610,7 @@ i {
     position: absolute;
     display: flex;
     flex-direction: column;
-    width: 100px;
-    height: 250px;
+    width: 150px;
     background-color: #303030;
     align-items: center;
     justify-content: center;
@@ -631,6 +630,10 @@ i {
     font-weight: bolder;
     cursor: pointer;
     color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
   }
   
   .chat-options button:hover {
@@ -708,8 +711,7 @@ i {
     position: absolute;
     display: flex;
     flex-direction: column;
-    width: 100px;
-    height: 150px;
+    width: 150px;
     background-color: #303030;
     align-items: center;
     justify-content: center;
@@ -729,6 +731,10 @@ i {
     font-weight: bolder;
     cursor: pointer;
     color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
   }
   
   .chat-options-non-admin button:hover {
@@ -1227,8 +1233,7 @@ i {
     position: absolute;
     display: flex;
     flex-direction: column;
-    width: 100px;
-    height: 250px;
+    width: 150px;
     background-color: #303030;
     align-items: center;
     justify-content: center;
@@ -1248,6 +1253,10 @@ i {
     font-weight: bolder;
     cursor: pointer;
     color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
   }
   
   .chat-options button:hover {
@@ -1325,8 +1334,7 @@ i {
     position: absolute;
     display: flex;
     flex-direction: column;
-    width: 100px;
-    height: 150px;
+    width: 150px;
     background-color: #303030;
     align-items: center;
     justify-content: center;
@@ -1346,6 +1354,10 @@ i {
     font-weight: bolder;
     cursor: pointer;
     color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
   }
   
   .chat-options-non-admin button:hover {

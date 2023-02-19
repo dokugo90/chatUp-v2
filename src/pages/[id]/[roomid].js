@@ -725,19 +725,19 @@ const publicStore = getFirestore();
                   chats[pathId].admin == uuid 
                   ?
                   <div style={{backgroundColor: theme ? "white" : "#555", boxShadow: theme ? "0px 10px 10px #555" : ""}} className='chat-options'>
-          <button style={{color: theme ? "black" : "white"}} onClick={() => handleAddUsersModal()}>Add User</button>
-          <button style={{color: theme ? "black" : "white"}} onClick={() => handleRenameModal()}>Rename</button>
-          <button style={{color: theme ? "black" : "white"}} onClick={() => deleteChatRoom()}>Delete</button>
-          <button style={{color: theme ? "black" : "white"}} onClick={() => handleAllMembers()}>Members</button>
-          <button style={{color: theme ? "black" : "white"}} onClick={() => handleKickUserModal()}>Kick</button>
+          <button style={{color: theme ? "black" : "white"}} onClick={() => handleAddUsersModal()}>Add User <i style={{fontSize: 20}} className='material-icons'>add</i></button>
+          <button style={{color: theme ? "black" : "white"}} onClick={() => handleAllMembers()}>Members <i style={{fontSize: 17}} className='material-icons'>perm_identity</i></button>
+          <button style={{color: theme ? "black" : "white"}} onClick={() => handleRenameModal()}>Rename <i style={{fontSize: 15}} className='material-icons'>edit</i></button>
+          <button style={{color: theme ? "black" : "white"}} onClick={() => handleKickUserModal()}>Kick <i style={{fontSize: 17}} className='material-icons'>person_remove</i></button>
+          <button style={{color: theme ? "black" : "white"}} onClick={() => deleteChatRoom()}>Delete <i style={{fontSize: 17}} className='material-icons'>delete</i></button>
           {/*<button disabled={true}>Private</button>*/}
         </div>
         : 
         <>
         <div style={{backgroundColor: theme ? "white" : "#555", boxShadow: theme ? "0px 10px 10px #555" : ""}} className='chat-options-non-admin'>
-          <button style={{color: theme ? "black" : "white"}} onClick={() => handleAddUsersModal()}>Add User</button>
-          <button style={{color: theme ? "black" : "white"}} onClick={() => removeUser()}>Leave</button>
-          <button style={{color: theme ? "black" : "white"}} onClick={() => handleAllMembers()}>Members</button>
+          <button style={{color: theme ? "black" : "white"}} onClick={() => handleAddUsersModal()}>Add User <i style={{fontSize: 20}} className='material-icons'>add</i></button>
+          <button style={{color: theme ? "black" : "white"}} onClick={() => handleAllMembers()}>Members <i style={{fontSize: 17}} className='material-icons'>perm_identity</i></button>
+          <button style={{color: theme ? "black" : "white"}} onClick={() => removeUser()}>Leave <i style={{fontSize: 17}} className='material-icons'>person_remove</i></button>
         </div>
         </>
                 }
