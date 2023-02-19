@@ -26,7 +26,7 @@ export default function Dashboard(props) {
         </>
         : 
         <>
-        <Link scroll={false} href="/[id]/[roomid]" as={`/${props.currentIndex}/${props.roomId}`}>
+        <Link prefetch={true} scroll={false} href="/[id]/[roomid]" as={`/${props.currentIndex}/${props.roomId}`}>
         <div onClick={() => {
           props.messageList.splice(0, props.messageList.length);
          // props.getMessages();
@@ -53,10 +53,14 @@ export function DashboardClient(props) {
   const router = useRouter();
 
   const handleChatRoute = () => {
-    router.push({
-      pathname: '/[id]/[roomId]',
-      query: { id: `${props.currentIndex}`, roomId: `${props.roomId}` },
-    });
+    router.push(
+      {
+        pathname: '/[id]/[roomId]',
+        query: { id: `${props.currentIndex}`, roomId: `${props.roomId}` },
+      },
+      undefined,
+      { shallow: true }
+    );
   };
 
   return (
