@@ -312,12 +312,13 @@ const publicStore = getFirestore();
 
   }
 
+  /*
   function handleShowRoomMessages(coll) {
     const firestore = getFirestore();
     const documentRef = doc(firestore, `rooms/AllRooms`);
     const usersRoomsRef = collection(documentRef, `userRooms`);
     const userRoomDocRef = doc(usersRoomsRef, pathRoom);
-    const userRoomSubcollection = query(collection(userRoomDocRef, `${chats[pathId].roomId}`), orderBy("sentMessage", "desc"), limit(50));
+    const userRoomSubcollection = query(collection(userRoomDocRef, `${chats[pathId].roomId}`), orderBy("sentMessage"), limit(50));
   
     setUserMessagesList([]);
   
@@ -347,6 +348,37 @@ const publicStore = getFirestore();
         });
     });
   
+    return unsubscribe;
+  }
+  */
+
+  function handleShowRoomMessages(coll) {
+    const firestore = getFirestore();
+    const documentRef = doc(firestore, `rooms/AllRooms`);
+    const usersRoomsRef = collection(documentRef, `userRooms`);
+    const userRoomDocRef = doc(usersRoomsRef, pathRoom);
+    const userRoomSubcollection = query(collection(userRoomDocRef, `${chats[pathId].roomId}`), orderBy("sentMessage", "desc"), limit(50));
+    
+    const unsubscribe = onSnapshot(userRoomSubcollection, snapshot => {
+      const user = getAuth().currentUser;
+      const { members, admin } = chats[pathId];
+  
+      if (!user || (!members.some(member => member.email === user.email) && admin !== user.uid)) {
+        setReturn404(true);
+        return;
+      }
+  
+      const messagesList = snapshot.docs.map(doc => ({
+        sender: doc.data().sentBy,
+        textMessage: doc.data().message,
+        messageImage: doc.data().userImage,
+        sentTime: doc.data().time,
+        messageId: doc.data().roomId,
+      }));
+  
+      setUserMessagesList(messagesList.reverse());
+    });
+    
     return unsubscribe;
   }
   
