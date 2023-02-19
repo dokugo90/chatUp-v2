@@ -86,6 +86,15 @@ i {
 .users-list-email {
   font-size: 10px;
   color: rgba(255, 255, 255, 0.7);
+  width: 100%;
+  word-wrap: break-word;
+  word-break: break-all;
+}
+
+.users-list-name {
+  width: 100%;
+  word-wrap: break-word;
+  word-break: break-all;
 }
 
 #body-message {
@@ -533,7 +542,7 @@ i {
     gap: 5px;
     height: 80px;
     overflow-y: auto;
-    overflow-x: auto;
+    overflow-x: hidden;
   }
 
   .users-list-flex::-webkit-scrollbar {
@@ -599,6 +608,9 @@ i {
   .message-text {
     color: rgba(255, 255, 255, 0.95);
     font-size: 13px;
+    width: 100%;
+    word-wrap:break-word;
+    word-break: break-all;
   }
 
   .message-sender {
@@ -1156,7 +1168,7 @@ i {
     gap: 5px;
     height: 80px;
     overflow-y: auto;
-    overflow-x: auto;
+    overflow-x: hidden;
   }
 
   .users-list-flex::-webkit-scrollbar {
@@ -1222,6 +1234,9 @@ i {
   .message-text {
     color: rgba(255, 255, 255, 0.95);
     font-size: 13px;
+    width: 100%;
+    word-wrap:break-word;
+    word-break: break-all;
   }
 
   .message-sender {

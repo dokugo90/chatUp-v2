@@ -442,8 +442,8 @@ useEffect(() => {
                 {
           modal ?
           <>
-          <div className='chat-private-public'>
-            <button onClick={() => handlePublicModal()}>Public</button>
+          <div style={{backgroundColor: theme ? "white" : "#555", boxShadow: theme ? "0px 10px 10px #555" : ""}} className='chat-private-public'>
+            <button style={{ color: theme ? "black" : "white"}} onClick={() => handlePublicModal()}>Public</button>
             {/*<button disabled={true}>Private</button>*/}
           </div>
           </>
@@ -508,8 +508,8 @@ useEffect(() => {
           publicModal ?
           <>
             <div className='create-public-flex'>
-              <div className='create-public'>
-                <input maxLength="20" minLength="2" onChange={e => setUserRoomName(e.target.value)} className='chat-name-input' type="text" placeholder='Chat Name'></input>
+              <div style={{backgroundColor: theme ? "white" : "#555", boxShadow: theme ? "0px 10px 10px #555" : ""}} className='create-public'>
+                <input style={{backgroundColor: theme ? "rgba(0, 0, 0, 0.3)" : "#242424", color: theme ? "black" : "white"}} maxLength="20" minLength="2" onChange={e => setUserRoomName(e.target.value)} className='chat-name-input' type="text" placeholder='Chat Name'></input>
                 <div className='users-list-flex'>
                 {
                   usersList.filter((currUser) => currUser.usermail !== email).map((item, index) => (
@@ -527,8 +527,8 @@ useEffect(() => {
                     }} className='users-list'>
                       <img src={item.pfp} className='users-photo'></img>
                       <div>
-                      <p className='users-list-name'>{item.usersName}</p>
-                      <p className='users-list-email'>{item.usermail}</p>
+                      <p style={{color: theme ? "black" : "white"}} className='users-list-name'>{item.usersName}</p>
+                      <p style={{color: theme ? "rgba(0, 0, 0, 0.5)" : "rgba(255, 255, 255, 0.7)"}} className='users-list-email'>{item.usermail}</p>
                       </div>
                     </div>
                     </>

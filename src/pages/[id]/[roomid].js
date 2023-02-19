@@ -38,6 +38,7 @@ import Link from 'next/link';
 import Dashboard from '@/app/components/dashboard';
 import { useRouter } from 'next/navigation'
 import MessageCard from '@/app/components/messageCard';
+import { DashboardClient } from '@/app/components/dashboard';
 
 export default function chatRoom({ pathId, pathRoom, allChats }) {
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -320,22 +321,29 @@ const publicStore = getFirestore();
     setUserMessagesList([]);
   
     const unsubscribe = onSnapshot(userRoomSubcollection, snapshot => {
-      snapshot.docChanges().forEach((change) => {
-        if (change.doc.data().roomId == pathRoom) {
-          if (change.type == "added") {
-            setUserMessagesList(prevState => [
-              ...prevState,
-              {
-                sender: change.doc.data().sentBy,
-                textMessage: change.doc.data().message,
-                messageImage: change.doc.data().userImage,
-                sentTime: change.doc.data().time,
-                messageId: change.doc.data().roomId,
-              },
-            ]);
+      const user = getAuth().currentUser;
+  const { members, admin } = chats[pathId];
+
+  if (!user || (!members.some(member => member.email === user.email) && admin !== user.uid)) {
+    setReturn404(true);
+    return;
+  }
+        snapshot.docChanges().forEach((change) => {
+          if (change.doc.data().roomId == pathRoom) {
+            if (change.type == "added") {
+              setUserMessagesList(prevState => [
+                ...prevState,
+                {
+                  sender: change.doc.data().sentBy,
+                  textMessage: change.doc.data().message,
+                  messageImage: change.doc.data().userImage,
+                  sentTime: change.doc.data().time,
+                  messageId: change.doc.data().roomId,
+                },
+              ]);
+            }
           }
-        }
-      });
+        });
     });
   
     return unsubscribe;
@@ -364,30 +372,35 @@ const publicStore = getFirestore();
 
     const regex = /^\s*$/;
 
-    if (!regex.test(userMessage)) {
-      addDoc(userRoomSubcollection, {
-        message: userMessage.trim(),
-        sentMessage: serverTimestamp(),
-        userImage: getAuth().currentUser.photoURL,
-        sentBy: getAuth().currentUser.displayName,
-        time: getTextDate(),
-        roomId: chats[pathId].roomId,
-      }).then(() => {
-        setUserMessage("")
-      }).catch((err) => {
+    if (chats[pathId].members.some((user) => user.email === email) || chats[pathId].admin == uuid) {
+      if (!regex.test(userMessage)) {
+        addDoc(userRoomSubcollection, {
+          message: userMessage.trim(),
+          sentMessage: serverTimestamp(),
+          userImage: getAuth().currentUser.photoURL,
+          sentBy: getAuth().currentUser.displayName,
+          time: getTextDate(),
+          roomId: chats[pathId].roomId,
+        }).then(() => {
+          setUserMessage("")
+        }).catch((err) => {
+          alert(err);
+        })
+    
+        
+        updateDoc(userRoomDocRef, {
+          lastMessage: userMessage.trim(),
+          lastMessageTime: getTextDate(),
+        })
+      .catch((err) => {
         alert(err);
-      })
-  
-      
-      updateDoc(userRoomDocRef, {
-        lastMessage: userMessage.trim(),
-        lastMessageTime: getTextDate(),
-      })
-    .catch((err) => {
-      alert(err);
-    });
+      });
+      } else {
+        alert("Message must include characters")
+      }
     } else {
-      alert("Message must include characters")
+      alert("Not a room member")
+      router.push("/");
     }
 //router.refresh()
 
@@ -644,6 +657,23 @@ const publicStore = getFirestore();
     });
   }
 
+  const handleKeyDown = e => {
+    if (e.keyCode === 13 && email != "") {
+      handleSendRoomMessages()
+    }
+  };
+
+  useEffect(() => {
+    let ignore = false;
+    if (typeof document !== "undefined" && !ignore) {
+      document.addEventListener("keydown", handleKeyDown)
+    }
+    return () => {
+      ignore = true;
+      document.removeEventListener("keydown", handleKeyDown);
+    }
+  }, [userMessage])
+
     if (!return404) {
       return (
         <>
@@ -663,7 +693,7 @@ const publicStore = getFirestore();
               {
         modal ?
         <>
-        <div style={{backgroundColor: theme ? "white" : "#555", boxShadow: theme ? "0px 10px 10px #555" : "0px 5px 5px white"}} className='chat-private-public'>
+        <div style={{backgroundColor: theme ? "white" : "#555", boxShadow: theme ? "0px 10px 10px #555" : ""}} className='chat-private-public'>
           <button style={{ color: theme ? "black" : "white"}} onClick={() => handlePublicModal()}>Public</button>
           {/*<button disabled={true}>Private</button>*/}
         </div>
