@@ -482,7 +482,7 @@ useEffect(() => {
                 item.members.some((user) => user.email === email) || item.admin == uuid ? (
                   <>
                   
-                    <div title={item.roomName} onMouseOver={() => setCurrentPath(item.roomId)}>
+                    <div title={item.roomName} onMouseOver={() => setCurrentPath(item.roomId)} onTouchStart={() => setCurrentPath(item.roomId)}>
                       <Dashboard
                         key={index}
                         roomId={item.roomId}
