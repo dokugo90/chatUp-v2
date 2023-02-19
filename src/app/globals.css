@@ -147,6 +147,30 @@ i {
     justify-content: center;
 }
 
+.footer {
+  background-color: #242424;
+  border-top-right-radius: 15px;
+  border-top-left-radius: 15px;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50px;
+  bottom: 0;
+  width: 100%;
+  position: fixed;
+  gap: 5px;
+}
+
+.github-repo-link {
+  text-decoration: underline;
+}
+
+.link-git {
+  color: white;
+  text-decoration: underline;
+}
+
 @media (min-width: 790px) {
   .cancel-public-btn {
     background-color: #f50057;

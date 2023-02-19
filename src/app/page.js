@@ -566,6 +566,9 @@ useEffect(() => {
                 <button onClick={() => Authentication().signIn()} className='signin-btn'>SIGN IN WITH GOOGLE</button>
             </div>  
         </div>
+        <div class="footer">
+    Created by <Link legacyBehavior className='link-git' href="https://github.com/dokugo90"><a className='github-repo-link' target="_blank" rel='noopener noreferrer'>dokugo90</a></Link> &copy; {new Date().getFullYear()}
+      </div>
       </>
     )
   }
