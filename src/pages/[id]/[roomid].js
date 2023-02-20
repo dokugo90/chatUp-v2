@@ -820,7 +820,10 @@ const publicStore = getFirestore();
             userMessagesList.filter((sent) => sent.messageId == chats[pathId].roomId).map((item, index) => (
               <>
               
-                <MessageCard CurrentEmail={email} senderEmail={item.senderEmail} theme={theme} image={item.messageImage} message={item.textMessage} sender={item.sender} timesent={item.sentTime} />
+              <MessageCard time={getTextDate} messages={userMessagesList} id={item.id} pathId={pathId} pathRoom={pathRoom} 
+                chats={chats} CurrentEmail={email} senderEmail={item.senderEmail}
+                 theme={theme} image={item.messageImage} message={item.textMessage}
+                  sender={item.sender} timesent={item.sentTime} />
               
               </>
             ))
