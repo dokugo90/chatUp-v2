@@ -370,6 +370,7 @@ const publicStore = getFirestore();
   
       const messagesList = snapshot.docs.map(doc => ({
         sender: doc.data().sentBy,
+        senderEmail: doc.data().sendermail,
         textMessage: doc.data().message,
         messageImage: doc.data().userImage,
         sentTime: doc.data().time,
@@ -412,6 +413,7 @@ const publicStore = getFirestore();
           sentMessage: serverTimestamp(),
           userImage: getAuth().currentUser.photoURL,
           sentBy: getAuth().currentUser.displayName,
+          sendermail: getAuth().currentUser.email,
           time: getTextDate(),
           roomId: chats[pathId].roomId,
         }).then(() => {
@@ -818,7 +820,7 @@ const publicStore = getFirestore();
             userMessagesList.filter((sent) => sent.messageId == chats[pathId].roomId).map((item, index) => (
               <>
               
-                <MessageCard theme={theme} image={item.messageImage} message={item.textMessage} sender={item.sender} timesent={item.sentTime} />
+                <MessageCard CurrentEmail={email} senderEmail={item.senderEmail} theme={theme} image={item.messageImage} message={item.textMessage} sender={item.sender} timesent={item.sentTime} />
               
               </>
             ))

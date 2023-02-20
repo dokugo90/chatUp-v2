@@ -6,20 +6,84 @@ export default function MessageCard(props) {
 
     return (
         <>
-        <div className='message-card'>
-            <img className='message-image' src={props.image} ></img>
+        {
+            props.CurrentEmail == props.senderEmail ?
+            <div className='message-card-you'>
             <div className='message-info-stack'>
-                <p style={{color: props.theme ? "rgba(0, 0, 0, 0.8)" : "rgba(255, 255, 255, 0.5)"}} className='message-sender'>{props.sender} at {props.timesent}</p>
+            <p style={{color: props.theme ? "rgba(0, 0, 0, 0.8)" : "rgba(255, 255, 255, 0.5)"}} className='message-sender'>{props.sender}</p>
                 {
                     linkRegex.test(props.message) ?
-                    <a style={{color: "blue"}} className='message-text' href={`${props.message}`} target='_blank' rel="noreferrer">Link -&gt; {props.message}</a>
+                    <>
+                    <div className='user-message-div-flex'>
+                    <div className='user-message-div'>
+                    <img className='message-image' src={props.image} ></img>
+                    <a style={{color: "white"}} className='message-text' href={`${props.message}`} target='_blank' rel="noreferrer">Link -&gt; {props.message}</a>
+                    </div>
+                    </div>
+                    <p style={{color: props.theme ? "rgba(0, 0, 0, 0.8)" : "rgba(255, 255, 255, 0.5)"}} className='message-sender'>{props.timesent}</p>
+                    </>
                     : emailRegex.test(props.message) ?
-                    <a style={{color: "blue"}} className='message-text' href={`mailto:${props.message}`} target='_blank' rel="noreferrer"> Email -&gt; {props.message}</a>
-                    : <p style={{color: props.theme ? "#242424" : "white"}} className='message-text'>{props.message}</p>
-                     
+                    <>
+                    <div className='user-message-div-flex'>
+                    <div className='user-message-div'>
+                    <img className='message-image' src={props.image} ></img>
+                    <a style={{color: "white"}} className='message-text' href={`mailto:${props.message}`} target='_blank' rel="noreferrer"> Email -&gt; {props.message}</a>
+                    </div>
+                    </div>
+                    <p style={{color: props.theme ? "rgba(0, 0, 0, 0.8)" : "rgba(255, 255, 255, 0.5)"}} className='message-sender'>{props.timesent}</p>
+                    </>
+                    : 
+                    <>
+                    <div className='user-message-div-flex'>
+                    <div className='user-message-div'>
+                    <img className='message-image' src={props.image} ></img>
+                    <p className='message-text'>{props.message}</p>
+                    </div>
+                    </div>
+                    <p style={{color: props.theme ? "rgba(0, 0, 0, 0.8)" : "rgba(255, 255, 255, 0.5)"}} className='message-sender'>{props.timesent}</p>
+                    </>
                 }
             </div>
         </div>
+        : 
+            <div className='message-card'>
+            <div className='message-info-stack'>
+                <p style={{color: props.theme ? "rgba(0, 0, 0, 0.8)" : "rgba(255, 255, 255, 0.5)"}} className='message-sender'>{props.sender}</p>
+                {
+                    linkRegex.test(props.message) ?
+                    <>
+                    <div className='user-message-div-other-flex'>
+                    <div className='user-message-div-other'>
+                    <img className='message-image' src={props.image} ></img>
+                    <a style={{color: "white"}} className='message-text' href={`${props.message}`} target='_blank' rel="noreferrer">Link -&gt; {props.message}</a>
+                    </div>
+                    </div>
+                    <p style={{color: props.theme ? "rgba(0, 0, 0, 0.8)" : "rgba(255, 255, 255, 0.5)"}} className='message-sender'>{props.timesent}</p>
+                    </>
+                    : emailRegex.test(props.message) ?
+                    <>
+                    <div className='user-message-div-other-flex'>
+                    <div className='user-message-div-other'>
+                    <img className='message-image' src={props.image} ></img>
+                    <a style={{color: "white"}} className='message-text' href={`mailto:${props.message}`} target='_blank' rel="noreferrer"> Email -&gt; {props.message}</a>
+                    </div>
+                    </div>
+                    <p style={{color: props.theme ? "rgba(0, 0, 0, 0.8)" : "rgba(255, 255, 255, 0.5)"}} className='message-sender'>{props.timesent}</p>
+                    </>
+                    : 
+                    <>
+                    <div className='user-message-div-other-flex'>
+                    <div className='user-message-div-other'>
+                    <img className='message-image' src={props.image} ></img>
+                    <p className='message-text'>{props.message}</p>
+                    </div>
+                    </div>
+                    <p style={{color: props.theme ? "rgba(0, 0, 0, 0.8)" : "rgba(255, 255, 255, 0.5)"}} className='message-sender'>{props.timesent}</p>
+                    </>
+                }
+            </div>
+        </div>
+        }
         </>
     )
 }
