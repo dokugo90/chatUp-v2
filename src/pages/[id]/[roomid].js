@@ -375,6 +375,7 @@ const publicStore = getFirestore();
         messageImage: doc.data().userImage,
         sentTime: doc.data().time,
         messageId: doc.data().roomId,
+        id: doc.id,
       }));
   
       setUserMessagesList(messagesList.reverse());
