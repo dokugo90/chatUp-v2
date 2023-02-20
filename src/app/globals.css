@@ -124,7 +124,6 @@ i {
 }
 
 .hide-dashboard {
-  transform: translateX(-350px);
   display: none;
 }
 
@@ -816,6 +815,39 @@ i {
     justify-content: flex-start;
   }
 
+  .message-options-flex {
+    display: flex;
+    justify-content: center;
+  }
+
+  .message-options {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+  }
+
+  .message-btn {
+      transition: .1s;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      background-color: transparent;
+      border: none;
+      outline: none;
+      color: white;
+      font-size: 12px;
+  }
+
+  .message-btn:hover {
+    background-color: rgba(0, 0, 0, 0.5);
+  
+  }
+
 }
 
 
@@ -1477,6 +1509,39 @@ i {
     display: flex;
     justify-content: flex-start;
   }
+
+  .message-options-flex {
+    display: flex;
+    justify-content: center;
+  }
+
+  .message-options {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+  }
+
+  .message-btn {
+    transition: .1s;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    background-color: transparent;
+    border: none;
+    outline: none;
+    color: white;
+    font-size: 12px;
+}
+
+.message-btn:hover {
+  background-color: rgba(0, 0, 0, 0.5);
+
+}
 }
 
 
