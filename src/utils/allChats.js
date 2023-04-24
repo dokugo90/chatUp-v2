@@ -28,5 +28,5 @@ export async function handleAllUserChats() {
       }
     });
     
-    return chats ;
+    return chats;
   }

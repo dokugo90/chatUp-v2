@@ -559,6 +559,7 @@ useEffect(() => {
       <>
       <script src="/node_modules/material-design-lite/material.min.js" defer></script>
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"></link>
+  <title>ChatUp v2</title>
   <div className='signin-flex'>
             <div id='signin-div'>
                 <h1 style={{textAlign: "center"}}>ChatUp</h1>
